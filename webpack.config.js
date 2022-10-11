@@ -30,7 +30,7 @@ module.exports = {
         use: [
           isDev ? "style-loader" : MiniCssExtractPlugin.loader,
           "css-loader",
-          "sass-loader"
+          "sass-loader",
         ],
       },
       {
@@ -57,7 +57,13 @@ module.exports = {
   
   plugins: [
     new HtmlWebpackPlugin({ template: './index.html', title: "vovandrelo" }),
-    new CopyPlugin({ patterns: [{ from: './assets/favicon.ico', to: path.resolve(__dirname, 'dist') }]}),
+    new CopyPlugin({
+      patterns: [
+        { from: './assets/favicon.ico', to: path.resolve(__dirname, 'dist') },
+        { from: './assets/images/carousel/', to: path.resolve(__dirname, 'dist/assets/images/carousel/') },
+        { from: './assets/images/icons/', to: path.resolve(__dirname, 'dist/assets/images/icons/') }
+      ]
+    }),
   ].concat(isDev ? [] : [new MiniCssExtractPlugin({ filename: `[name].${isDev ? "[contenthash]." : ""}css` })]),  
 
   devServer: {

@@ -1,0 +1,51 @@
+@import './var.sass'
+    
+.button
+    height: 64px
+    padding: 19px 24px
+    background-color: $color-yellow
+    font-family: "Lato", sans-serif
+    font-style: italic
+    font-weight: 600
+    font-size: 20px
+    line-height: 1.2
+    color: $color-black
+    display: inline-block
+    transition: 0.2s all
+    text-transform: uppercase
+    cursor: pointer
+
+    &:hover, &:active, &:focus
+        background-color: $color-yellow-dark
+
+    &.button_block
+        display: block
+        width: 100%
+
+    &.is-loading
+        pointer-events: none
+        &::after
+            content: ""
+            width: 24px
+            height: 24px
+            margin-left: 12px
+            position: relative
+            background: url(/assets/images/icons/loader-icon-sm.svg) center no-repeat
+            background-size: cover
+            vertical-align: bottom
+            display: inline-block
+            animation: loadingSpinner 1s infinite linear
+
+.btn-group
+    display: inline-flex
+    flex-direction: row
+    justify-content: center
+    &__button
+        position: relative
+
+@media all and (max-width: 767px)
+    .btn-group
+        display: flex
+
+    .btn-group__button
+        flex-grow: 1
