@@ -1,0 +1,71 @@
+@import "./var.sass"
+    
+.card
+    height: $card-height
+    display: flex
+    flex-direction: column
+    position: relative
+    transition: 0.2s all
+    cursor: pointer
+    &:hover
+        background-color: #3b3a31
+        .card__body
+            background-color: #3b3a31
+        .card__top
+            background-color: #4e4d41
+    &__top
+        flex-grow: 1
+        display: flex
+        flex-direction: column
+        align-items: center
+        justify-content: center
+        position: relative
+        background-color: $color-black-middle
+    &__image
+        max-width: calc(100% - 100px)
+        width: 100%
+    &__price
+        position: absolute
+        right: 0
+        bottom: 0
+        display: inline-block
+        padding: 8px
+        min-width: 72px
+        text-align: center
+        background-color: $color-pink
+        color: $color-body
+        font-family: $font-primary, sans-serif
+        font-weight: 700
+        font-size: 17px
+        line-height: 1.2
+    &__body
+        height: 70px
+        background-color: $color-black-dark
+        display: flex
+        flex-direction: row
+        align-items: center
+        justify-content: space-between
+    &__title
+        text-align: center
+        font-weight: 500
+        font-size: 21px
+        font-style: italic
+        line-height: 1.2
+        width: 100%
+    &__button
+        background-color: $color-yellow
+        width: 72px
+        flex: 1 0 72px
+        height: 100%
+        display: flex
+        flex-direction: column
+        align-items: center
+        justify-content: center
+        cursor: pointer
+        &:hover, &:active
+            background-color: $color-yellow-dark
+            
+@media all and (max-width: 767px)
+    .card
+        margin-bottom: 16px
+        height: auto

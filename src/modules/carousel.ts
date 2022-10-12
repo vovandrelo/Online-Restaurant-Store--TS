@@ -4,7 +4,7 @@ import "../styles/carousel.sass";
 // <================================================== ОПИСАНИЕ ТИПОВ =================================================> \\
 
 // Структура слайда:
-export interface Slide {
+export interface ISlide {
     name: string,
     price: number,
     image: string,
@@ -12,7 +12,7 @@ export interface Slide {
 }
 
 // Структура слайдера:
-interface Slider {
+interface ICarousel {
     getElem: () => HTMLElement,                 // Получение слайдера
     render: () => void,                         // Рендер слайдера
     move: (direction: string) => void,          // Перемещение слайдов
@@ -23,11 +23,11 @@ interface Slider {
 // <================================================= РЕАЛИЗАЦИЯ МОДУЛЯ ===============================================> \\
 
 // Элемент Слайдер(Карусель):
-export default class Carousel implements Slider {
+export default class Carousel implements ICarousel {
     // <============================================ ОБЪЯВЛЕНИЕ ПЕРЕМЕННЫХ ============================================> \\
     private elem: null | HTMLElement = null;            // Элемент "Карусель"
     private carouselInner: null | HTMLElement = null;   // Движимый элемент (содержащит внутри себя все слайды)
-    private slides: Slide[] = [];                       // Данные о слайдах
+    private slides: ISlide[] = [];                      // Данные о слайдах
     private arrowLeft: null | HTMLElement = null;       // Элемент управления "Влево"
     private arrowRight: null | HTMLElement = null;      // Элемент управления "Вправо"
     private widthSlide: number = 0;                     // Ширина слайда
@@ -36,7 +36,7 @@ export default class Carousel implements Slider {
     private position: number = 0;                       // Позиция слайдера (отступ от начального положения)
 
     // <=========================================== РЕАЛИЗАЦИЯ КОНСТРУКТОРА ===========================================> \\
-    constructor(slides: Slide[]) {
+    constructor(slides: ISlide[]) {
         this.slides = slides                            // Данные о слайдах
         this.render();                                  // Производим первоначальное отображение элементов
     }
@@ -167,7 +167,7 @@ export default class Carousel implements Slider {
 
     // <=========================================== РЕАЛИЗАЦИЯ ДОБАВЛЕНИЯ =============================================> \\
     onAddClick(slideId: string): void {        
-        // Если слайдер был успещно создан, то:
+        // Если слайдер был успешно создан, то:
         if (this.elem) {
             // Формируем кастомное событие:
             const event = new CustomEvent('product-add', {
