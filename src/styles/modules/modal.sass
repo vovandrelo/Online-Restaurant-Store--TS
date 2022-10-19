@@ -1,0 +1,84 @@
+@import "../var.sass"
+
+.modal
+    position: fixed
+    z-index: 999
+    top: 0
+    left: 0
+    height: 100vh
+    width: 100vw
+    overflow-y: auto
+    display: block
+    &__overlay
+        height: 100%
+        width: 100%
+        background-color: #918f79
+        opacity: 0.8
+    &__inner
+        position: absolute
+        top: 50%
+        left: 50%
+        transform: translate(-50%, -50%)
+        max-width: 994px
+        width: 100%
+        background-color: $color-black
+        display: flex
+        flex-direction: column
+    &__header
+        position: relative
+        padding: 30px 80px
+    &__body
+        padding: 0 80px 64px
+        &-inner
+            background-color: $color-black-dark
+            text-align: center
+            padding: 40px 33px
+            font-weight: 700
+            font-size: 21px
+            line-height: 1.2
+            color: $color-body
+            font-family: $font-primary, sans-serif
+            font-style: italic
+            img
+                max-width: 100%
+                margin-top: 20px
+    &__buttons
+        margin-top: 48px
+        text-align: center
+    &__title
+        font-size: 36px
+        line-height: 1.8
+        font-family: $font-secondary, sans-serif
+        font-weight: 400
+        color: $color-yellow
+        text-shadow: 3px 3px $color-pink
+        margin: 0
+        text-align: center
+        text-transform: uppercase
+    &__close
+        position: absolute
+        top: 24px
+        right: 24px
+        cursor: pointer
+        &:hover
+            opacity: 0.8
+
+.is-modal-open
+    overflow: hidden
+
+
+@media all and (max-width: 767px)
+    .modal__body
+        padding: 0 0 45px
+        flex-grow: 1
+
+
+    .modal__inner
+        top: 0
+        left: 0
+        transform: none
+        min-height: 100vh
+
+    .modal__title {
+        font-size: 28px
+        margin: 0

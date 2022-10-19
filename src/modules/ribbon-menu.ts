@@ -1,5 +1,5 @@
 import createElement from '../assets/lib/create-element';
-import "../styles/ribbon-menu.sass";
+import "../styles/modules/ribbon-menu.sass";
 // <================================================== ОПИСАНИЕ ТИПОВ =================================================> \\
 
 // Структура категории:
@@ -10,11 +10,11 @@ export interface ICategories {
 
 // Структура меню:
 interface IRibbonMenu {
-    render: () => void,                     // Рендер элемента меню
-    getElem: () => HTMLElement,             // Получение элемента меню
-    move: (event: Event) => void,           // Движение полосы прокрутки
-    arrowControl: () => void,               // Калибровка органов управления
-    onClickAdd: (event: Event) => void,     // Реализация приминения фильтра
+    render: () => void,                                 // Рендер элемента меню
+    getElem: () => HTMLElement,                         // Получение элемента меню
+    move: (event: Event) => void,                       // Движение полосы прокрутки
+    arrowControl: () => void,                           // Калибровка органов управления
+    onClickAdd: (event: Event) => void,                 // Реализация приминения фильтра
 }
 
 // <================================================= РЕАЛИЗАЦИЯ МОДУЛЯ ===============================================> \\

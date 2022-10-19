@@ -1,5 +1,5 @@
 import createElement from "../assets/lib/create-element";
-import "../styles/product-card.sass";
+import "../styles/modules/product-card.sass";
 // <================================================== ОПИСАНИЕ ТИПОВ =================================================> \\
 // Структура продукта:
 export interface IProduct {

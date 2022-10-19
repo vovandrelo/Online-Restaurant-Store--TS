@@ -1,5 +1,5 @@
 import createElement from "../assets/lib/create-element"
-import "../styles/carousel.sass";
+import "../styles/modules/carousel.sass";
 
 // <================================================== ОПИСАНИЕ ТИПОВ =================================================> \\
 
