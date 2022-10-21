@@ -1,4 +1,4 @@
-import createElement from "../assets/lib/create-element";
+/* import createElement from "../assets/lib/create-element";
 import "../styles/modules/modal.sass";
 // <================================================== ОПИСАНИЕ ТИПОВ =================================================> \\
 
@@ -111,4 +111,4 @@ export default class Modal implements IModal {
             modalBody.append(node);
         }
     }
-}
+} */

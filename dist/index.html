@@ -6,7 +6,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <link type="Image/x-icon" href="./favicon.ico" rel="icon">
     <title>VoV - Production</title>
-<script defer src="main.0dbc7725c23e97c432b8.js"></script></head>
+<script defer src="main.5e89500b3a9d98b4468a.js"></script></head>
 <body>
     <header>
 
@@ -18,8 +18,62 @@
         <div class="container">
             <h2 class="section-heading">Our Menu</h2>
             <div data-ribbon-holder></div>
-          </div>
-        
+        </div>
+
+        <div class="container">
+            <div class="filters">
+                <div class="filters__inner">
+
+                    <div class="filters__group">
+                        <label class="filters__label">Max spiciness</label>
+                        <div class="filters__slider" data-slider-holder></div>
+                    </div>
+
+                    <div class="filters__group">
+                        <div class="filters__checkbox">
+                            <input
+                                class="styled-checkbox"
+                                id="nuts-checkbox"
+                                type="checkbox"
+                                value="1"
+                            >
+                            <label for="nuts-checkbox">
+                                <span class="filters__label">No nuts</span>
+                            </label>
+                        </div>
+                    </div>
+
+                    <div class="filters__group">
+                        <div class="filters__checkbox">
+                            <input
+                                class="styled-checkbox"
+                                id="vegeterian-checkbox"
+                                type="checkbox"
+                                value="1"
+                            >
+                            <label for="vegeterian-checkbox">
+                                <span class="filters__label">Vegeterian only</span>
+                            </label>
+                        </div>
+                    </div>
+
+                </div>
+            </div>
+        </div>
+
+        <div class="container" data-products-grid-holder>
+            <div class="products-grid is-loading">
+                <div class="products-grid__skeleton">
+                    <div class="products-grid__skeleton-item"></div>
+                    <div class="products-grid__skeleton-item"></div>
+                    <div class="products-grid__skeleton-item"></div>
+                    <div class="products-grid__skeleton-item"></div>
+                    <div class="products-grid__skeleton-item"></div>
+                    <div class="products-grid__skeleton-item"></div>
+                </div>
+                <div class="products-grid__inner"></div>
+            </div>
+        </div>
     </main>
 
 

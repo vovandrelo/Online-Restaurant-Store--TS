@@ -22,6 +22,7 @@ export default class RibbonMenu implements IRibbonMenu {
 
     // <============================================ ОБЪЯВЛЕНИЕ ПЕРЕМЕННЫХ ============================================> \\
     private elem: null | HTMLElement = null;            // Элемент - меню
+    private value: string = ""                          // Выбранная категория
     private categories: ICategories[];                  // Данные о категориях
     private ribbonInner: null | HTMLElement = null;     // Внутренний блок со всеми категориями
     private arrowRight: null | HTMLElement = null;      // Стрелка вправо (для прокрутки меню)
@@ -69,10 +70,9 @@ export default class RibbonMenu implements IRibbonMenu {
         this.arrowLeft.addEventListener("click", event => this.move(event));
     }
 
-    // <=========================================== ПОЛУЧЕНИЕ ПОЛОСЫ МЕНЮ =============================================> \\
-    getElem = (): HTMLElement => {
-        return this.elem as HTMLElement;
-    }
+    // <================================ ПОЛУЧЕНИЕ ПОЛОСЫ МЕНЮ И ВЫБРАННОЙ КАТЕГОРИИ ==================================> \\
+    getElem = (): HTMLElement => this.elem as HTMLElement;
+    getValue = (): string => this.value as string;
 
     // <============================================== ПРОКРУТКА МЕНЮ =================================================> \\
     move(event: Event) {
@@ -111,7 +111,7 @@ export default class RibbonMenu implements IRibbonMenu {
         }
     }
 
-    // <=========================================== РЕАЛИЗАЦИЯ ДОБАВЛЕНИЯ =============================================> \\
+    // <======================================== ОБРАБОТКА ВЫБОРА КАТЕГОРИИ ===========================================> \\
     onClickAdd(event: Event) {
         event.preventDefault();
         const eventTarget = event.target;
@@ -121,6 +121,9 @@ export default class RibbonMenu implements IRibbonMenu {
             // ВКлючаем активность только у того элемента меню, который выбрали:
             this.elem.querySelectorAll(".ribbon__item").forEach(item => item.classList.remove("ribbon__item_active"));
             eventTarget.classList.add("ribbon__item_active");
+
+            // Запоминаем id выбранной категории:
+            this.value = eventTarget.dataset.id as string;
 
             // Формируем пользовательское событие, которое указывает, что была применена фильтрацция:
             const customEvent = new CustomEvent('ribbon-select', {

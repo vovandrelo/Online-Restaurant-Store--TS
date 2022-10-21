@@ -61,7 +61,8 @@ module.exports = {
       patterns: [
         { from: './assets/favicon.ico', to: path.resolve(__dirname, 'dist') },
         { from: './assets/images/carousel/', to: path.resolve(__dirname, 'dist/assets/images/carousel/') },
-        { from: './assets/images/icons/', to: path.resolve(__dirname, 'dist/assets/images/icons/') }
+        { from: './assets/images/icons/', to: path.resolve(__dirname, 'dist/assets/images/icons/') },
+        { from: './assets/images/products/', to: path.resolve(__dirname, 'dist/assets/images/products/') }
       ]
     }),
   ].concat(isDev ? [] : [new MiniCssExtractPlugin({ filename: `[name].${isDev ? "[contenthash]." : ""}css` })]),  
