@@ -18,6 +18,34 @@ var createElement = function createElement(html) {
 
 /***/ }),
 
+/***/ "./assets/lib/escape-html.ts":
+/*!***********************************!*\
+  !*** ./assets/lib/escape-html.ts ***!
+  \***********************************/
+/***/ (function(__unused_webpack_module, __webpack_exports__, __webpack_require__) {
+
+__webpack_require__.r(__webpack_exports__);
+/* harmony default export */ __webpack_exports__["default"] = (function (str) {
+  return Array.from(str).map(function (char) {
+    switch (char) {
+      case '&':
+        return '&amp;';
+      case '"':
+        return '&quot;';
+      case '\'':
+        return '&#39;';
+      case '<':
+        return '&lt;';
+      case '>':
+        return '&gt;';
+      default:
+        return char;
+    }
+  }).join('');
+});
+
+/***/ }),
+
 /***/ "./modules/carousel.ts":
 /*!*****************************!*\
   !*** ./modules/carousel.ts ***!
@@ -194,6 +222,384 @@ var Carousel = /*#__PURE__*/function () {
 
 /***/ }),
 
+/***/ "./modules/cart-icon.ts":
+/*!******************************!*\
+  !*** ./modules/cart-icon.ts ***!
+  \******************************/
+/***/ (function(__unused_webpack_module, __webpack_exports__, __webpack_require__) {
+
+__webpack_require__.r(__webpack_exports__);
+/* harmony export */ __webpack_require__.d(__webpack_exports__, {
+/* harmony export */   "default": function() { return /* binding */ CartIcon; }
+/* harmony export */ });
+/* harmony import */ var _assets_lib_create_element__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! ../assets/lib/create-element */ "./assets/lib/create-element.ts");
+/* harmony import */ var _styles_modules_cart_cart_icon_sass__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! ../styles/modules/cart/cart-icon.sass */ "./styles/modules/cart/cart-icon.sass");
+function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
+function _defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } }
+function _createClass(Constructor, protoProps, staticProps) { if (protoProps) _defineProperties(Constructor.prototype, protoProps); if (staticProps) _defineProperties(Constructor, staticProps); Object.defineProperty(Constructor, "prototype", { writable: false }); return Constructor; }
+function _defineProperty(obj, key, value) { if (key in obj) { Object.defineProperty(obj, key, { value: value, enumerable: true, configurable: true, writable: true }); } else { obj[key] = value; } return obj; }
+
+
+var CartIcon = /*#__PURE__*/function () {
+  function CartIcon() {
+    var _this = this;
+    _classCallCheck(this, CartIcon);
+    _defineProperty(this, "elem", null);
+    _defineProperty(this, "getElem", function () {
+      return _this.elem;
+    });
+    this.render();
+  }
+  _createClass(CartIcon, [{
+    key: "render",
+    value: function render() {
+      this.elem = (0,_assets_lib_create_element__WEBPACK_IMPORTED_MODULE_0__["default"])('<div class="cart-icon"></div>');
+    }
+  }, {
+    key: "update",
+    value: function update(cart) {
+      var _this2 = this;
+      if (this.elem) {
+        if (!cart.isEmpty()) {
+          this.elem.classList.add('cart-icon_visible');
+          this.elem.innerHTML = "\n                    <div class=\"cart-icon__inner\">\n                        <span class=\"cart-icon__count\">".concat(cart.getTotalCount(), "</span>\n                        <span class=\"cart-icon__price\">\u20AC").concat(cart.getTotalPrice().toFixed(2), "</span>\n                    </div>");
+          this.elem.classList.add('shake');
+          document.addEventListener('transitionend', function () {
+            _this2.elem = _this2.elem;
+            _this2.elem.classList.remove('shake');
+          }, {
+            once: true
+          });
+        } else {
+          this.elem.classList.remove('cart-icon_visible');
+        }
+      }
+    }
+  }]);
+  return CartIcon;
+}();
+
+
+/***/ }),
+
+/***/ "./modules/cart.ts":
+/*!*************************!*\
+  !*** ./modules/cart.ts ***!
+  \*************************/
+/***/ (function(__unused_webpack_module, __webpack_exports__, __webpack_require__) {
+
+__webpack_require__.r(__webpack_exports__);
+/* harmony export */ __webpack_require__.d(__webpack_exports__, {
+/* harmony export */   "default": function() { return /* binding */ Cart; }
+/* harmony export */ });
+/* harmony import */ var _assets_lib_create_element__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! ../assets/lib/create-element */ "./assets/lib/create-element.ts");
+/* harmony import */ var _assets_lib_escape_html__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! ../assets/lib/escape-html */ "./assets/lib/escape-html.ts");
+/* harmony import */ var _modal__WEBPACK_IMPORTED_MODULE_2__ = __webpack_require__(/*! ./modal */ "./modules/modal.ts");
+function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
+function _defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } }
+function _createClass(Constructor, protoProps, staticProps) { if (protoProps) _defineProperties(Constructor.prototype, protoProps); if (staticProps) _defineProperties(Constructor, staticProps); Object.defineProperty(Constructor, "prototype", { writable: false }); return Constructor; }
+function _defineProperty(obj, key, value) { if (key in obj) { Object.defineProperty(obj, key, { value: value, enumerable: true, configurable: true, writable: true }); } else { obj[key] = value; } return obj; }
+
+
+
+var Cart = /*#__PURE__*/function () {
+  function Cart(cartIcon) {
+    var _this = this;
+    _classCallCheck(this, Cart);
+    _defineProperty(this, "cartItems", []);
+    _defineProperty(this, "modal", new _modal__WEBPACK_IMPORTED_MODULE_2__["default"]());
+    _defineProperty(this, "isEmpty", function () {
+      return _this.cartItems.length === 0 ? true : false;
+    });
+    _defineProperty(this, "getTotalCount", function () {
+      return _this.cartItems.reduce(function (sum, item) {
+        return sum + item.count;
+      }, 0);
+    });
+    _defineProperty(this, "getTotalPrice", function () {
+      return _this.cartItems.reduce(function (sum, item) {
+        return sum + item.count * item.product.price;
+      }, 0);
+    });
+    this.cartIcon = cartIcon;
+    this.addEventListeners();
+  }
+
+  // <========================================= РЕНДЕР ЭЛЕМЕНТА В КОРЗИНЕ ===========================================> \\
+  _createClass(Cart, [{
+    key: "renderProduct",
+    value: function renderProduct(product, count) {
+      return (0,_assets_lib_create_element__WEBPACK_IMPORTED_MODULE_0__["default"])("\n            <div class=\"cart-product\" data-product-id=\"".concat(product.id, "\">\n                <div class=\"cart-product__img\">\n                    <img src=\"/assets/images/products/").concat(product.image, "\" alt=\"product\">\n                </div>\n                <div class=\"cart-product__info\">\n                    <div class=\"cart-product__title\">").concat((0,_assets_lib_escape_html__WEBPACK_IMPORTED_MODULE_1__["default"])(product.name), "</div>\n                    <div class=\"cart-product__price-wrap\">\n                        <div class=\"cart-counter\">\n                            <button type=\"button\" class=\"cart-counter__button cart-counter__button_minus\">\n                                <img src=\"/assets/images/icons/square-minus-icon.svg\" alt=\"minus\">\n                            </button>\n                            <span class=\"cart-counter__count\">").concat(count, "</span>\n                            <button type=\"button\" class=\"cart-counter__button cart-counter__button_plus\">\n                                <img src=\"/assets/images/icons/square-plus-icon.svg\" alt=\"plus\">\n                            </button>\n                        </div>\n                        <div class=\"cart-product__price\">\u20AC").concat(product.price.toFixed(2), "</div>\n                    </div>\n                </div>\n            </div>"));
+    }
+
+    // <=========================================== РЕНДЕР ФОРМЫ В КОРЗИНЕ ============================================> \\
+  }, {
+    key: "renderOrderForm",
+    value: function renderOrderForm() {
+      return (0,_assets_lib_create_element__WEBPACK_IMPORTED_MODULE_0__["default"])("\n            <form class=\"cart-form\">\n                <h5 class=\"cart-form__title\">Delivery</h5>\n                <div class=\"cart-form__group cart-form__group_row\">\n                    <input name=\"name\" type=\"text\" class=\"cart-form__input\" placeholder=\"Name\" required value=\"Santa Claus\">\n                    <input name=\"email\" type=\"email\" class=\"cart-form__input\" placeholder=\"Email\" required value=\"john@gmail.com\">\n                    <input name=\"tel\" type=\"tel\" class=\"cart-form__input\" placeholder=\"Phone\" required value=\"+1234567\">\n                </div>\n\n                <div class=\"cart-form__group\">\n                    <input name=\"address\" type=\"text\" class=\"cart-form__input\" placeholder=\"Address\" required value=\"North, Lapland, Snow Home\">\n                </div>\n\n                <div class=\"cart-buttons\">\n                    <div class=\"cart-buttons__buttons btn-group\">\n                        <div class=\"cart-buttons__info\">\n                            <span class=\"cart-buttons__info-text\">total</span>\n                            <span class=\"cart-buttons__info-price\">\u20AC".concat(this.getTotalPrice().toFixed(2), "</span>\n                        </div>\n                        <button type=\"submit\" class=\"cart-buttons__button btn-group__button button\">order</button>\n                    </div>\n                </div>\n            </form>\n        "));
+    }
+
+    // <========================================= ОБРАБОТКА КЛИКА ПО КОРЗИНЕ ==========================================> \\
+  }, {
+    key: "addEventListeners",
+    value: function addEventListeners() {
+      var _this2 = this;
+      this.cartIcon.getElem().onclick = function () {
+        return _this2.renderModal();
+      };
+    }
+
+    // <========================================= ОБНОВЛЕНИЕ ИКОНКИ КОРЗИНЫ ===========================================> \\
+  }, {
+    key: "onProductUpdate",
+    value: function onProductUpdate(cartItem) {
+      this.cartIcon.update(this);
+    }
+
+    // <======================================= ДОБАВЛЕНИЕ ПРОДУКТА В КОРЗИНУ =========================================> \\
+  }, {
+    key: "addProduct",
+    value: function addProduct(product) {
+      // Если функция была вызвана с аргументом, то:
+      if (product) {
+        // Получение индекса элемента из корзины, который нас интересует:
+        var productIndex = this.cartItems.findIndex(function (item) {
+          return item.product.id === product.id;
+        });
+        // Если такого элемента в корзине нет, то добавляем его. Если есть - увеличиваем количество:
+        productIndex !== -1 ? this.cartItems[productIndex].count++ : this.cartItems.push({
+          product: product,
+          count: 1
+        });
+        // Выполняем обновление иконкикорзины:
+        this.onProductUpdate({
+          product: product,
+          count: 1
+        });
+      }
+    }
+
+    // <================================= ОБНОВЛЕНИЕ КОЛИЧЕСТВА ПРОДУКТА В КОРЗИНЕ ====================================> \\
+  }, {
+    key: "updateProductCount",
+    value: function updateProductCount(productId, amount) {
+      // Получение индекса элемента из корзины, который нас интересует:
+      var productIndex = this.cartItems.findIndex(function (item) {
+        return item.product.id === productId;
+      });
+
+      // Если такого элемента нет, то ничего не делаем:
+      if (productIndex === -1) return;
+
+      // Получение вспомогательных переменных:
+      var targetProductCount = this.cartItems[productIndex].count; // количество интересующего продукта
+      var targetProductId = this.cartItems[productIndex].product.id; // id интересующего продукта
+      var newCount = targetProductCount + amount; // новое количество интересующего продукта
+
+      // Если новвое количество равно 0, то удаляем его из корзины:
+      if (newCount === 0) {
+        this.cartItems = this.cartItems.filter(function (item) {
+          return item.product.id !== targetProductId;
+        });
+        // В противном случае изменяем количество:
+      } else {
+        this.cartItems[productIndex].count = newCount;
+      }
+    }
+  }, {
+    key: "renderModal",
+    value: function renderModal() {
+      var _this3 = this;
+      this.modal.setTitle("Your order");
+      var cartBody = document.createElement("div");
+      this.cartItems.forEach(function (item) {
+        return cartBody.append(_this3.renderProduct(item.product, item.count));
+      });
+      cartBody.append(this.renderOrderForm());
+      var btnAdd = cartBody.querySelectorAll(".cart-counter__button_plus");
+      var btnDel = cartBody.querySelectorAll(".cart-counter__button_minus");
+      var form = cartBody.querySelector(".cart-form");
+      var clickHandler = function clickHandler(event) {
+        if (event && event.currentTarget) {
+          var eventTarget = event.currentTarget;
+          var productTarget = eventTarget.closest("[data-product-id]");
+          var productIdTarget = productTarget.dataset.productId;
+          var action = eventTarget.classList.contains('cart-counter__button_plus') ? 1 : -1;
+          _this3.updateProductCount(productIdTarget, action);
+        }
+      };
+      btnAdd.forEach(function (btn) {
+        return btn.addEventListener("click", clickHandler);
+      });
+      btnDel.forEach(function (btn) {
+        return btn.addEventListener("click", clickHandler);
+      });
+      form.addEventListener("submit", function (event) {
+        return _this3.onSubmit(event);
+      });
+      this.modal.setBody(cartBody);
+      this.modal.open();
+    }
+  }, {
+    key: "onSubmit",
+    value: function onSubmit(event) {
+      var _this4 = this;
+      event.preventDefault();
+      if (event && event.currentTarget) {
+        var eventTarget = event.currentTarget;
+        var btnSubmit = eventTarget.querySelector('[type="submit"]');
+        btnSubmit.classList.add("is-loading");
+        console.log(eventTarget);
+        fetch('https://httpbin.org/post', {
+          method: "POST",
+          body: new FormData(eventTarget)
+        }).then(function () {
+          _this4.cartItems = [];
+          _this4.cartIcon.update(_this4);
+          _this4.modal.setTitle('Success!');
+          var cartBody = (0,_assets_lib_create_element__WEBPACK_IMPORTED_MODULE_0__["default"])("\n                    <div class=\"modal__body-inner\">\n                        <p>Order successful! Your order is being cooked :)\n                            <br>We\u2019ll notify you about delivery time shortly.<br>\n                            <img src=\"/assets/images/delivery.gif\">\n                        </p>\n                    </div>\n                ");
+          _this4.modal.setBody(cartBody);
+        }).catch(function (error) {
+          return console.log("Error:", error);
+        });
+      }
+    }
+  }]);
+  return Cart;
+}();
+
+
+/***/ }),
+
+/***/ "./modules/modal.ts":
+/*!**************************!*\
+  !*** ./modules/modal.ts ***!
+  \**************************/
+/***/ (function(__unused_webpack_module, __webpack_exports__, __webpack_require__) {
+
+__webpack_require__.r(__webpack_exports__);
+/* harmony export */ __webpack_require__.d(__webpack_exports__, {
+/* harmony export */   "default": function() { return /* binding */ Modal; }
+/* harmony export */ });
+/* harmony import */ var _assets_lib_create_element__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! ../assets/lib/create-element */ "./assets/lib/create-element.ts");
+/* harmony import */ var _styles_modules_modal_sass__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! ../styles/modules/modal.sass */ "./styles/modules/modal.sass");
+function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
+function _defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } }
+function _createClass(Constructor, protoProps, staticProps) { if (protoProps) _defineProperties(Constructor.prototype, protoProps); if (staticProps) _defineProperties(Constructor, staticProps); Object.defineProperty(Constructor, "prototype", { writable: false }); return Constructor; }
+function _defineProperty(obj, key, value) { if (key in obj) { Object.defineProperty(obj, key, { value: value, enumerable: true, configurable: true, writable: true }); } else { obj[key] = value; } return obj; }
+
+
+// <================================================== ОПИСАНИЕ ТИПОВ =================================================> \\
+
+// Структура модального окна:
+// <================================================= РЕАЛИЗАЦИЯ МОДУЛЯ ===============================================> \\
+var Modal = /*#__PURE__*/function () {
+  // <============================================ ОБЪЯВЛЕНИЕ ПЕРЕМЕННЫХ ============================================> \\
+  // Модальное окно
+
+  // <=========================================== РЕАЛИЗАЦИЯ КОНСТРУКТОРА ===========================================> \\
+  function Modal() {
+    var _this = this;
+    _classCallCheck(this, Modal);
+    _defineProperty(this, "elem", null);
+    _defineProperty(this, "getElem", function () {
+      return _this.elem;
+    });
+    _defineProperty(this, "onTapKey", function (event) {
+      // Если нажатая клавиша -  Escape, то:
+      if (event.key == 'Escape') {
+        // Закрываем модальное окно:
+        _this.close();
+        // Удаляем обработчик на нажатие клавиши:
+        document.removeEventListener('keydown', _this.onTapKey);
+      }
+    });
+    this.render(); // Производим первоначальный рендер модального окна
+  }
+
+  // <========================================== РЕНДЕР МОДАЛЬНОГО ОКНА =============================================> \\
+  _createClass(Modal, [{
+    key: "render",
+    value: function render() {
+      // Создание вёрстки модального окна:
+      this.elem = (0,_assets_lib_create_element__WEBPACK_IMPORTED_MODULE_0__["default"])("\n            <div class=\"modal\">\n                <div class=\"modal__overlay\"></div>\n                <div class=\"modal__inner\">\n                    <div class=\"modal__header\">\n                        <button type=\"button\" class=\"modal__close\">\n                            <img src=\"/assets/images/icons/cross-icon.svg\" alt=\"close-icon\" />\n                        </button>\n\n                        <h3 class=\"modal__title\"></h3>\n                    </div>\n                    <div class=\"modal__body\"></div>\n                </div>\n            </div>\n        ");
+    }
+
+    // <========================================= ПОЛУЧЕНИЕ МОДАЛЬНОГО ОКНА ===========================================> \\
+  }, {
+    key: "open",
+    value:
+    // <========================================== ОТКРЫТИЕ МОДАЛЬНОГО ОКНА ===========================================> \\
+    function open() {
+      var _this2 = this;
+      // Если модальное окно действительно открыто (и существует):
+      if (this.elem) {
+        // Блокировка scroll-а:
+        document.body.classList.add("is-modal-open");
+        // Размещение модального окна внутри body:
+        document.body.append(this.elem);
+        // Получение кнопки закрытия модального окна:
+        var closeBtn = this.elem.querySelector(".modal__close");
+        // Обработка события закрытия модального окна:
+        closeBtn.addEventListener("click", function () {
+          return _this2.close();
+        }, {
+          once: true
+        });
+        // Обработка события закрытия модального окна по кажатию клавиши:
+        document.addEventListener('keydown', this.onTapKey);
+      }
+    }
+
+    // <========================================== УДАЛЕНИЕ МОДАЛЬНОГО ОКНА ===========================================> \\
+  }, {
+    key: "close",
+    value: function close() {
+      // Если модальное окно существует, то:
+      if (this.elem) {
+        // Удаляем модальное окно со страницы:
+        this.elem.remove();
+        this.elem = null;
+        // Возвращаем возможность прокрутки:
+        document.body.classList.remove("is-modal-open");
+      }
+    }
+
+    // <========================================= ЗАКРЫТИЕ ПО НАЖАТИЮ КНОПКИ ===========================================> \\
+  }, {
+    key: "setTitle",
+    value:
+    // <==================================== УСТАНОВКА ЗАГОЛОВКА МОДАЛЬНОГО ОКНА ======================================> \\
+    function setTitle(title) {
+      // Если модальное окно существует, то:
+      if (this.elem) {
+        // Получаем заголовок модального окна:
+        var modalTitle = this.elem.querySelector(".modal__title");
+        // Устанавливаем новый заголовок:
+        modalTitle.innerHTML = title;
+      }
+    }
+
+    // <======================================= УСТАНОВКА ТЕЛА МОДАЛЬНОГО ОКНА ========================================> \\
+  }, {
+    key: "setBody",
+    value: function setBody(node) {
+      // Если модальное окно существует, то:
+      if (this.elem) {
+        // Получаем тело модального окна:
+        var modalBody = this.elem.querySelector(".modal__body");
+        // Устанавливаем новое тело:
+        modalBody.innerHTML = "";
+        modalBody.append(node);
+      }
+    }
+  }]);
+  return Modal;
+}();
+
+
+/***/ }),
+
 /***/ "./modules/product-card.ts":
 /*!*********************************!*\
   !*** ./modules/product-card.ts ***!
@@ -243,11 +649,9 @@ var ProductCard = /*#__PURE__*/function () {
 
       // Получение кнопки добавления продукта в корзину:
       var addBtn = this.elem.querySelector(".card__button");
-      // Прослушмивание событие "Клика" по кнопке добавления. В случае нажатия вызываем метод добавления:
+      // Прослушивание событие "Клика" по кнопке добавления. В случае нажатия вызываем метод добавления:
       addBtn.addEventListener("click", function () {
         return _this2.onAddClick.call(_this2);
-      }, {
-        once: true
       });
     }
 
@@ -287,6 +691,7 @@ __webpack_require__.r(__webpack_exports__);
 /* harmony export */ });
 /* harmony import */ var _product_card__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! ./product-card */ "./modules/product-card.ts");
 /* harmony import */ var _assets_lib_create_element__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! ../assets/lib/create-element */ "./assets/lib/create-element.ts");
+/* harmony import */ var _styles_modules_product_grid_sass__WEBPACK_IMPORTED_MODULE_2__ = __webpack_require__(/*! ../styles/modules/product-grid.sass */ "./styles/modules/product-grid.sass");
 function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
 function _defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } }
 function _createClass(Constructor, protoProps, staticProps) { if (protoProps) _defineProperties(Constructor.prototype, protoProps); if (staticProps) _defineProperties(Constructor, staticProps); Object.defineProperty(Constructor, "prototype", { writable: false }); return Constructor; }
@@ -294,11 +699,15 @@ function _defineProperty(obj, key, value) { if (key in obj) { Object.definePrope
 
 
 
+
 // <================================================== ОПИСАНИЕ ТИПОВ =================================================> \\
+// Структура объекта с фильтрацией:
 // <================================================= РЕАЛИЗАЦИЯ МОДУЛЯ ===============================================> \\
 var ProductGrid = /*#__PURE__*/function () {
   // <============================================ ОБЪЯВЛЕНИЕ ПЕРЕМЕННЫХ ============================================> \\
-
+  // Блюда
+  // Основной элемент списка блюд
+  // Контейнер для элементов-блюд
   // Все применённые фильтры
 
   // <=========================================== РЕАЛИЗАЦИЯ КОНСТРУКТОРА ===========================================> \\
@@ -311,7 +720,7 @@ var ProductGrid = /*#__PURE__*/function () {
     _defineProperty(this, "getElem", function () {
       return _this.elem;
     });
-    this.products = products;
+    this.products = products; // Получение всех продуктов:
     this.render();
   }
 
@@ -319,6 +728,7 @@ var ProductGrid = /*#__PURE__*/function () {
   _createClass(ProductGrid, [{
     key: "render",
     value: function render() {
+      // Создание вёрстки слайдера:
       this.elem = (0,_assets_lib_create_element__WEBPACK_IMPORTED_MODULE_1__["default"])("\n            <div class=\"products-grid\">\n                <div class=\"products-grid__inner\"></div>\n            </div>\n        ");
       this.productsList = this.elem.querySelector(".products-grid__inner");
       this.updateFilter();
@@ -329,41 +739,48 @@ var ProductGrid = /*#__PURE__*/function () {
     key: "updateFilter",
     value:
     // <============================================ ОБНОВЛЕНИЕ КАРТОЧЕК ==============================================> \\
-
     function updateFilter() {
       var _this2 = this;
       var filters = arguments.length > 0 && arguments[0] !== undefined ? arguments[0] : {};
+      // Объекдинение полученных в качестве аргумента фильтров с уже применёнными:      
       this.filters = Object.assign(this.filters, filters);
+
+      // Создание отображаемых блюд:
       var displayedProds = this.products;
+
+      // Фильтрация блюд на основе noNuts
       if (this.filters.noNuts) {
         displayedProds = displayedProds.filter(function (prod) {
           return !prod.nuts;
         });
       }
+      // Фильтрация блюд на основе vegeterianOnly
       if (this.filters.vegeterianOnly) {
         displayedProds = displayedProds.filter(function (prod) {
           return prod.vegeterian;
         });
       }
-      if (this.filters.maxSpiciness) {
+      // Фильтрация блюд на основе maxSpiciness
+      if (this.filters.hasOwnProperty("maxSpiciness")) {
         var maxSpiciness = this.filters.maxSpiciness;
         displayedProds = displayedProds.filter(function (prod) {
           return prod.spiciness <= maxSpiciness;
         });
       }
+      // Фильтрация блюд на основе category
       if (this.filters.category) {
         displayedProds = displayedProds.filter(function (prod) {
           return prod.category === _this2.filters.category;
         });
       }
+
+      // Если контейнер для списка блюд был успешно создан, то:
       if (this.productsList) {
         this.productsList.innerHTML = "";
         displayedProds.forEach(function (product) {
           _this2.productsList = _this2.productsList;
-          var newProdCard = new _product_card__WEBPACK_IMPORTED_MODULE_0__["default"](product).getElem;
-          if (newProdCard instanceof Node) {
-            _this2.productsList.append(newProdCard);
-          }
+          // Добавляем отфильтрованные блюда на страницу:
+          _this2.productsList.append(new _product_card__WEBPACK_IMPORTED_MODULE_0__["default"](product).getElem());
         });
       }
     }
@@ -396,6 +813,7 @@ function _defineProperty(obj, key, value) { if (key in obj) { Object.definePrope
 // <================================================= РЕАЛИЗАЦИЯ МОДУЛЯ ===============================================> \\
 var RibbonMenu = /*#__PURE__*/function () {
   // <============================================ ОБЪЯВЛЕНИЕ ПЕРЕМЕННЫХ ============================================> \\
+  // Элемент - меню
 
   // Данные о категориях
   // Внутренний блок со всеми категориями
@@ -407,11 +825,15 @@ var RibbonMenu = /*#__PURE__*/function () {
     var _this = this;
     _classCallCheck(this, RibbonMenu);
     _defineProperty(this, "elem", null);
+    _defineProperty(this, "value", "");
     _defineProperty(this, "ribbonInner", null);
     _defineProperty(this, "arrowRight", null);
     _defineProperty(this, "arrowLeft", null);
     _defineProperty(this, "getElem", function () {
       return _this.elem;
+    });
+    _defineProperty(this, "getValue", function () {
+      return _this.value;
     });
     this.categories = categories; // Данные о категориях
     this.render(); // Производим первоначальное отображение элементов
@@ -454,7 +876,7 @@ var RibbonMenu = /*#__PURE__*/function () {
       });
     }
 
-    // <=========================================== ПОЛУЧЕНИЕ ПОЛОСЫ МЕНЮ =============================================> \\
+    // <================================ ПОЛУЧЕНИЕ ПОЛОСЫ МЕНЮ И ВЫБРАННОЙ КАТЕГОРИИ ==================================> \\
   }, {
     key: "move",
     value:
@@ -497,7 +919,7 @@ var RibbonMenu = /*#__PURE__*/function () {
       }
     }
 
-    // <=================================== ГЛОБАЛЬНОЕ СОБЫТИЕ ВЫБОРА КАТЕГОРИИ =======================================> \\
+    // <======================================== ОБРАБОТКА ВЫБОРА КАТЕГОРИИ ===========================================> \\
   }, {
     key: "onClickAdd",
     value: function onClickAdd(event) {
@@ -511,6 +933,9 @@ var RibbonMenu = /*#__PURE__*/function () {
           return item.classList.remove("ribbon__item_active");
         });
         eventTarget.classList.add("ribbon__item_active");
+
+        // Запоминаем id выбранной категории:
+        this.value = eventTarget.dataset.id;
 
         // Формируем пользовательское событие, которое указывает, что была применена фильтрацция:
         var customEvent = new CustomEvent('ribbon-select', {
@@ -570,52 +995,48 @@ var StepSlider = /*#__PURE__*/function () {
     _defineProperty(this, "getElem", function () {
       return _this.elem;
     });
+    _defineProperty(this, "getValue", function () {
+      return _this.value;
+    });
     _defineProperty(this, "move", function (event) {
-      event.preventDefault(); // Отмена стандартного поведения браузера
+      // Отмена стандартного поведения браузера
+      event.preventDefault();
       if (_this.elem) {
         // Подсчёт расстояния от начала слайдера до курсора (по Х):
         var cursPos = event.clientX - _this.elem.getBoundingClientRect().left;
         // Подсчёт ширины сегмента:
         var segWidth = _this.elem.getBoundingClientRect().width / (_this.steps - 1);
-        // Позиция ползунка:
+        // Позиция ползунка в %:
         var newPointPos = 0;
 
         // Если курсор вышел за левую границу движения "ползунка", то:
         if (cursPos < 0) {
-          _this.value = 0; // Устанавливаем целочисленное значение
-          _this.updateScale(0); // Настраиваем активную шкалу
-          _this.updatePoint(0); // Настраиваем положение ползунка
-
+          newPointPos = 0; // Подсчитываем новое положение ползунка
+          _this.value = 0; // Подсчитываем новое значение слайдера
           // Если курсор вышел за правую границу движения "ползунка", то:
         } else if (cursPos > _this.elem.getBoundingClientRect().width) {
-          _this.value = _this.steps - 1; // Устанавливаем целочисленное значение
-          _this.updateScale(100); // Настраиваем активную шкалу
-          _this.updatePoint(100); // Настраиваем положение ползунка
-
+          newPointPos = 100; // Подсчитываем новое положение ползунка
+          _this.value = _this.steps - 1; // Подсчитываем новое значение слайдера
           // Если курсор находится в области движения слайдера, то:
         } else {
-          // Устанавливаем целочисленное значение:
+          // Подсчитываем новое положение ползунка:
+          newPointPos = cursPos * 100 / _this.elem.getBoundingClientRect().width;
+          // Подсчитываем новое значение слайдера:
           _this.value = Math.round(cursPos / segWidth);
-
-          // Если произошло событие клика или деактивации,
-          // то высчитываем строгое положение "ползунка":
-          if (event.type === "click" || event.type === "pointerup") {
-            newPointPos = _this.value * 100 / (_this.steps - 1);
-            _this.createCustomEvent();
-
-            // Если произошло событие движения мыши, то высчитываем
-            // положение "ползунка" соответствующее положению курсора:
-          } else if (event.type === "pointermove") {
-            newPointPos = cursPos * 100 / _this.elem.getBoundingClientRect().width; //
-          } else {
-            console.log("Что-то сильно пошло не так...");
-          }
         }
-        // Устанавливаем активную шкалу, положение ползунка и значения таба относительно
-        // подсчитанного положения:
-        _this.updateScale(newPointPos);
-        _this.updatePoint(newPointPos);
-        _this.updateActiveTab();
+
+        // Если произошёл клик или диактивация нажатия, то:
+        if (event.type === "click" || event.type === "pointerup") {
+          // Подсчитываем новое положение ползунка:
+          newPointPos = _this.value * 100 / (_this.steps - 1);
+          // Запускаем пользовательское событие:		
+          _this.createCustomEvent();
+        }
+
+        // Запуск обновления:
+        _this.updateScale(newPointPos); // Активной шкалы
+        _this.updatePoint(newPointPos); // Положения ползунка
+        _this.updateActiveTab(); // Активного таба
       }
     });
     this.steps = initialValue.steps; // Установка количества "шагов" слайдера
@@ -674,7 +1095,7 @@ var StepSlider = /*#__PURE__*/function () {
       });
     }
 
-    // <============================================= ПОЛУЧЕНИЕ СЛАЙДЕРА ==============================================> \\
+    // <===================================== ПОЛУЧЕНИЕ СЛАЙДЕРА И ЕГО ЗНАЧЕНИЯ =======================================> \\
   }, {
     key: "updateActiveTab",
     value:
@@ -802,6 +1223,34 @@ ___CSS_LOADER_EXPORT___.push([module.id, ".carousel {\n  height: 313px;\n  posit
 
 /***/ }),
 
+/***/ "../node_modules/css-loader/dist/cjs.js!../node_modules/sass-loader/dist/cjs.js!./styles/modules/cart/cart-icon.sass":
+/*!***************************************************************************************************************************!*\
+  !*** ../node_modules/css-loader/dist/cjs.js!../node_modules/sass-loader/dist/cjs.js!./styles/modules/cart/cart-icon.sass ***!
+  \***************************************************************************************************************************/
+/***/ (function(module, __webpack_exports__, __webpack_require__) {
+
+__webpack_require__.r(__webpack_exports__);
+/* harmony import */ var _node_modules_css_loader_dist_runtime_sourceMaps_js__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! ../../../../node_modules/css-loader/dist/runtime/sourceMaps.js */ "../node_modules/css-loader/dist/runtime/sourceMaps.js");
+/* harmony import */ var _node_modules_css_loader_dist_runtime_sourceMaps_js__WEBPACK_IMPORTED_MODULE_0___default = /*#__PURE__*/__webpack_require__.n(_node_modules_css_loader_dist_runtime_sourceMaps_js__WEBPACK_IMPORTED_MODULE_0__);
+/* harmony import */ var _node_modules_css_loader_dist_runtime_api_js__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! ../../../../node_modules/css-loader/dist/runtime/api.js */ "../node_modules/css-loader/dist/runtime/api.js");
+/* harmony import */ var _node_modules_css_loader_dist_runtime_api_js__WEBPACK_IMPORTED_MODULE_1___default = /*#__PURE__*/__webpack_require__.n(_node_modules_css_loader_dist_runtime_api_js__WEBPACK_IMPORTED_MODULE_1__);
+/* harmony import */ var _node_modules_css_loader_dist_runtime_getUrl_js__WEBPACK_IMPORTED_MODULE_2__ = __webpack_require__(/*! ../../../../node_modules/css-loader/dist/runtime/getUrl.js */ "../node_modules/css-loader/dist/runtime/getUrl.js");
+/* harmony import */ var _node_modules_css_loader_dist_runtime_getUrl_js__WEBPACK_IMPORTED_MODULE_2___default = /*#__PURE__*/__webpack_require__.n(_node_modules_css_loader_dist_runtime_getUrl_js__WEBPACK_IMPORTED_MODULE_2__);
+// Imports
+
+
+
+var ___CSS_LOADER_URL_IMPORT_0___ = new URL(/* asset import */ __webpack_require__(/*! ../../../../../assets/images/icons/cart-icon.svg */ "./assets/images/icons/cart-icon.svg"), __webpack_require__.b);
+var ___CSS_LOADER_EXPORT___ = _node_modules_css_loader_dist_runtime_api_js__WEBPACK_IMPORTED_MODULE_1___default()((_node_modules_css_loader_dist_runtime_sourceMaps_js__WEBPACK_IMPORTED_MODULE_0___default()));
+var ___CSS_LOADER_URL_REPLACEMENT_0___ = _node_modules_css_loader_dist_runtime_getUrl_js__WEBPACK_IMPORTED_MODULE_2___default()(___CSS_LOADER_URL_IMPORT_0___);
+// Module
+___CSS_LOADER_EXPORT___.push([module.id, ".cart-icon {\n  display: none;\n  position: absolute;\n  right: 0;\n  top: 50px;\n  width: 57px;\n  height: 63px;\n  text-decoration: none;\n  cursor: pointer;\n  transition: all 0.5s ease;\n}\n.cart-icon.shake {\n  animation: cartshake 0.5s cubic-bezier(0.36, 0.07, 0.19, 0.97) both;\n  backface-visibility: hidden;\n  transform-origin: top right;\n}\n.cart-icon__inner {\n  background: url(" + ___CSS_LOADER_URL_REPLACEMENT_0___ + ") center no-repeat;\n  background-size: cover;\n  position: relative;\n  width: 100%;\n  height: 100%;\n  flex-grow: 1;\n  display: flex;\n  flex-direction: column;\n  align-items: center;\n  padding-right: 3px;\n}\n.cart-icon_visible {\n  display: block;\n}\n.cart-icon__count {\n  font-size: 26px;\n  line-height: 1.1;\n  font-weight: 900;\n  color: #c92086;\n  margin-top: 16px;\n}\n.cart-icon__price {\n  font-size: 11px;\n  line-height: 1.1;\n  font-weight: 500;\n  color: #1f1e19;\n  margin: 0;\n}\n\n@keyframes cartshake {\n  0% {\n    transform: rotate(0);\n  }\n  15% {\n    transform: rotate(5deg);\n  }\n  30% {\n    transform: rotate(-5deg);\n  }\n  45% {\n    transform: rotate(4deg);\n  }\n  60% {\n    transform: rotate(-4deg);\n  }\n  75% {\n    transform: rotate(2deg);\n  }\n  85% {\n    transform: rotate(-2deg);\n  }\n  92% {\n    transform: rotate(1deg);\n  }\n  100% {\n    transform: rotate(0);\n  }\n}\n@media all and (max-width: 767px) {\n  .cart-icon {\n    position: fixed;\n    top: 15px;\n    right: 10px;\n    transform: none;\n    z-index: 95;\n  }\n  .cart-icon::before {\n    content: \"\";\n    position: absolute;\n    top: -15px;\n    right: -10px;\n    border: 55px solid transparent;\n    border-right-color: #c92086;\n    border-top-color: #c92086;\n    z-index: 1;\n  }\n  .cart-icon__inner {\n    position: relative;\n    z-index: 2;\n  }\n}", "",{"version":3,"sources":["webpack://./styles/modules/cart/cart-icon.sass","webpack://./styles/var.sass"],"names":[],"mappings":"AAEA;EACI,aAAA;EACA,kBAAA;EACA,QAAA;EACA,SAAA;EACA,WAAA;EACA,YAAA;EACA,qBAAA;EACA,eAAA;EACA,yBAAA;AADJ;AAEI;EACI,mEAAA;EACA,2BAAA;EACA,2BAAA;AAAR;AACI;EACI,oEAAA;EACA,sBAAA;EACA,kBAAA;EACA,WAAA;EACA,YAAA;EACA,YAAA;EACA,aAAA;EACA,sBAAA;EACA,mBAAA;EACA,kBAAA;AACR;AAAI;EACI,cAAA;AAER;AADI;EACI,eAAA;EACA,gBAAA;EACA,gBAAA;EACA,cC7BK;ED8BL,gBAAA;AAGR;AAFI;EACI,eAAA;EACA,gBAAA;EACA,gBAAA;EACA,cCtCM;EDuCN,SAAA;AAIR;;AAFA;EACI;IACI,oBAAA;EAKN;EAJE;IACI,uBAAA;EAMN;EALE;IACI,wBAAA;EAON;EANE;IACI,uBAAA;EAQN;EAPE;IACI,wBAAA;EASN;EARE;IACI,uBAAA;EAUN;EATE;IACI,wBAAA;EAWN;EAVE;IACI,uBAAA;EAYN;EAXE;IACI,oBAAA;EAaN;AACF;AAZA;EACI;IACI,eAAA;IACA,SAAA;IACA,WAAA;IACA,eAAA;IACA,WAAA;EAcN;EAbM;IACI,WAAA;IACA,kBAAA;IACA,UAAA;IACA,YAAA;IACA,8BAAA;IACA,2BCvEC;IDwED,yBCxEC;IDyED,UAAA;EAeV;EAdM;IACI,kBAAA;IACA,UAAA;EAgBV;AACF","sourcesContent":["@import \"../../var.sass\"    \n    \n.cart-icon\n    display: none\n    position: absolute\n    right: 0\n    top: 50px\n    width: 57px\n    height: 63px\n    text-decoration: none\n    cursor: pointer\n    transition: all 0.5s ease\n    &.shake\n        animation: cartshake 0.5s cubic-bezier(0.36, 0.07, 0.19, 0.97) both\n        backface-visibility: hidden\n        transform-origin: top right\n    &__inner\n        background: url(\"/assets/images/icons/cart-icon.svg\") center no-repeat\n        background-size: cover\n        position: relative\n        width: 100%\n        height: 100%\n        flex-grow: 1\n        display: flex\n        flex-direction: column\n        align-items: center\n        padding-right: 3px\n    &_visible\n        display: block\n    &__count\n        font-size: 26px\n        line-height: 1.1\n        font-weight: 900\n        color: $color-pink\n        margin-top: 16px\n    &__price\n        font-size: 11px\n        line-height: 1.1\n        font-weight: 500\n        color: $color-black\n        margin: 0\n\n@keyframes cartshake\n    0%\n        transform: rotate(0)\n    15%\n        transform: rotate(5deg)\n    30%\n        transform: rotate(-5deg)\n    45%\n        transform: rotate(4deg)\n    60%\n        transform: rotate(-4deg)\n    75%\n        transform: rotate(2deg)\n    85%\n        transform: rotate(-2deg)\n    92%\n        transform: rotate(1deg)\n    100%\n        transform: rotate(0)\n\n@media all and (max-width: 767px)\n    .cart-icon\n        position: fixed\n        top: 15px\n        right: 10px\n        transform: none\n        z-index: 95\n        &::before\n            content: \"\"\n            position: absolute\n            top: -15px\n            right: -10px\n            border: 55px solid transparent\n            border-right-color: $color-pink\n            border-top-color: $color-pink\n            z-index: 1\n        &__inner\n            position: relative\n            z-index: 2\n","$color-white: #fff\n$color-black: #1f1e19\n$color-yellow: #ecd41a\n$color-yellow-dark: #c8b416\n$color-pink: #c92086\n$color-black-light: #6e6a51\n$color-black-middle: #414036\n$color-black-dark: #2d2c25\n$color-grey: #b6b4a2\n$color-body: $color-white\n$carousel-height: 313px\n$card-height: 320px\n$font-primary: \"Lato\"\n$font-secondary: \"Sriracha\""],"sourceRoot":""}]);
+// Exports
+/* harmony default export */ __webpack_exports__["default"] = (___CSS_LOADER_EXPORT___);
+
+
+/***/ }),
+
 /***/ "../node_modules/css-loader/dist/cjs.js!../node_modules/sass-loader/dist/cjs.js!./styles/modules/filters.sass":
 /*!********************************************************************************************************************!*\
   !*** ../node_modules/css-loader/dist/cjs.js!../node_modules/sass-loader/dist/cjs.js!./styles/modules/filters.sass ***!
@@ -832,6 +1281,29 @@ ___CSS_LOADER_EXPORT___.push([module.id, ".filters {\n  padding: 16px;\n  border
 
 /***/ }),
 
+/***/ "../node_modules/css-loader/dist/cjs.js!../node_modules/sass-loader/dist/cjs.js!./styles/modules/modal.sass":
+/*!******************************************************************************************************************!*\
+  !*** ../node_modules/css-loader/dist/cjs.js!../node_modules/sass-loader/dist/cjs.js!./styles/modules/modal.sass ***!
+  \******************************************************************************************************************/
+/***/ (function(module, __webpack_exports__, __webpack_require__) {
+
+__webpack_require__.r(__webpack_exports__);
+/* harmony import */ var _node_modules_css_loader_dist_runtime_sourceMaps_js__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! ../../../node_modules/css-loader/dist/runtime/sourceMaps.js */ "../node_modules/css-loader/dist/runtime/sourceMaps.js");
+/* harmony import */ var _node_modules_css_loader_dist_runtime_sourceMaps_js__WEBPACK_IMPORTED_MODULE_0___default = /*#__PURE__*/__webpack_require__.n(_node_modules_css_loader_dist_runtime_sourceMaps_js__WEBPACK_IMPORTED_MODULE_0__);
+/* harmony import */ var _node_modules_css_loader_dist_runtime_api_js__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! ../../../node_modules/css-loader/dist/runtime/api.js */ "../node_modules/css-loader/dist/runtime/api.js");
+/* harmony import */ var _node_modules_css_loader_dist_runtime_api_js__WEBPACK_IMPORTED_MODULE_1___default = /*#__PURE__*/__webpack_require__.n(_node_modules_css_loader_dist_runtime_api_js__WEBPACK_IMPORTED_MODULE_1__);
+// Imports
+
+
+var ___CSS_LOADER_EXPORT___ = _node_modules_css_loader_dist_runtime_api_js__WEBPACK_IMPORTED_MODULE_1___default()((_node_modules_css_loader_dist_runtime_sourceMaps_js__WEBPACK_IMPORTED_MODULE_0___default()));
+// Module
+___CSS_LOADER_EXPORT___.push([module.id, ".modal {\n  position: fixed;\n  z-index: 999;\n  top: 0;\n  left: 0;\n  height: 100vh;\n  width: 100vw;\n  overflow-y: auto;\n  display: block;\n}\n.modal__overlay {\n  height: 100%;\n  width: 100%;\n  background-color: #918f79;\n  opacity: 0.8;\n}\n.modal__inner {\n  position: absolute;\n  top: 50%;\n  left: 50%;\n  transform: translate(-50%, -50%);\n  max-width: 994px;\n  width: 100%;\n  background-color: #1f1e19;\n  display: flex;\n  flex-direction: column;\n}\n.modal__header {\n  position: relative;\n  padding: 30px 80px;\n}\n.modal__body {\n  padding: 0 80px 64px;\n}\n.modal__body-inner {\n  background-color: #2d2c25;\n  text-align: center;\n  padding: 40px 33px;\n  font-weight: 700;\n  font-size: 21px;\n  line-height: 1.2;\n  color: #fff;\n  font-family: \"Lato\", sans-serif;\n  font-style: italic;\n}\n.modal__body-inner img {\n  max-width: 100%;\n  margin-top: 20px;\n}\n.modal__buttons {\n  margin-top: 48px;\n  text-align: center;\n}\n.modal__title {\n  font-size: 36px;\n  line-height: 1.8;\n  font-family: \"Sriracha\", sans-serif;\n  font-weight: 400;\n  color: #ecd41a;\n  text-shadow: 3px 3px #c92086;\n  margin: 0;\n  text-align: center;\n  text-transform: uppercase;\n}\n.modal__close {\n  position: absolute;\n  top: 24px;\n  right: 24px;\n  cursor: pointer;\n}\n.modal__close:hover {\n  opacity: 0.8;\n}\n\n.is-modal-open {\n  overflow: hidden;\n}\n\n@media all and (max-width: 767px) {\n  .modal__body {\n    padding: 0 0 45px;\n    flex-grow: 1;\n  }\n  .modal__inner {\n    top: 0;\n    left: 0;\n    transform: none;\n    min-height: 100vh;\n  }\n  .modal__title {\n    font-size: 28px;\n    margin: 0;\n  }\n}", "",{"version":3,"sources":["webpack://./styles/modules/modal.sass","webpack://./styles/var.sass"],"names":[],"mappings":"AAEA;EACI,eAAA;EACA,YAAA;EACA,MAAA;EACA,OAAA;EACA,aAAA;EACA,YAAA;EACA,gBAAA;EACA,cAAA;AADJ;AAEI;EACI,YAAA;EACA,WAAA;EACA,yBAAA;EACA,YAAA;AAAR;AACI;EACI,kBAAA;EACA,QAAA;EACA,SAAA;EACA,gCAAA;EACA,gBAAA;EACA,WAAA;EACA,yBCtBM;EDuBN,aAAA;EACA,sBAAA;AACR;AAAI;EACI,kBAAA;EACA,kBAAA;AAER;AADI;EACI,oBAAA;AAGR;AAFQ;EACI,yBCzBO;ED0BP,kBAAA;EACA,kBAAA;EACA,gBAAA;EACA,eAAA;EACA,gBAAA;EACA,WCtCE;EDuCF,+BAAA;EACA,kBAAA;AAIZ;AAHY;EACI,eAAA;EACA,gBAAA;AAKhB;AAJI;EACI,gBAAA;EACA,kBAAA;AAMR;AALI;EACI,eAAA;EACA,gBAAA;EACA,mCAAA;EACA,gBAAA;EACA,cClDO;EDmDP,4BAAA;EACA,SAAA;EACA,kBAAA;EACA,yBAAA;AAOR;AANI;EACI,kBAAA;EACA,SAAA;EACA,WAAA;EACA,eAAA;AAQR;AAPQ;EACI,YAAA;AASZ;;AAPA;EACI,gBAAA;AAUJ;;AAPA;EACI;IACI,iBAAA;IACA,YAAA;EAUN;EAPE;IACI,MAAA;IACA,OAAA;IACA,eAAA;IACA,iBAAA;EASN;EAPE;IACI,eAAA;IACA,SAAA;EASN;AACF","sourcesContent":["@import \"../var.sass\"\n\n.modal\n    position: fixed\n    z-index: 999\n    top: 0\n    left: 0\n    height: 100vh\n    width: 100vw\n    overflow-y: auto\n    display: block\n    &__overlay\n        height: 100%\n        width: 100%\n        background-color: #918f79\n        opacity: 0.8\n    &__inner\n        position: absolute\n        top: 50%\n        left: 50%\n        transform: translate(-50%, -50%)\n        max-width: 994px\n        width: 100%\n        background-color: $color-black\n        display: flex\n        flex-direction: column\n    &__header\n        position: relative\n        padding: 30px 80px\n    &__body\n        padding: 0 80px 64px\n        &-inner\n            background-color: $color-black-dark\n            text-align: center\n            padding: 40px 33px\n            font-weight: 700\n            font-size: 21px\n            line-height: 1.2\n            color: $color-body\n            font-family: $font-primary, sans-serif\n            font-style: italic\n            img\n                max-width: 100%\n                margin-top: 20px\n    &__buttons\n        margin-top: 48px\n        text-align: center\n    &__title\n        font-size: 36px\n        line-height: 1.8\n        font-family: $font-secondary, sans-serif\n        font-weight: 400\n        color: $color-yellow\n        text-shadow: 3px 3px $color-pink\n        margin: 0\n        text-align: center\n        text-transform: uppercase\n    &__close\n        position: absolute\n        top: 24px\n        right: 24px\n        cursor: pointer\n        &:hover\n            opacity: 0.8\n\n.is-modal-open\n    overflow: hidden\n\n\n@media all and (max-width: 767px)\n    .modal__body\n        padding: 0 0 45px\n        flex-grow: 1\n\n\n    .modal__inner\n        top: 0\n        left: 0\n        transform: none\n        min-height: 100vh\n\n    .modal__title\n        font-size: 28px\n        margin: 0","$color-white: #fff\n$color-black: #1f1e19\n$color-yellow: #ecd41a\n$color-yellow-dark: #c8b416\n$color-pink: #c92086\n$color-black-light: #6e6a51\n$color-black-middle: #414036\n$color-black-dark: #2d2c25\n$color-grey: #b6b4a2\n$color-body: $color-white\n$carousel-height: 313px\n$card-height: 320px\n$font-primary: \"Lato\"\n$font-secondary: \"Sriracha\""],"sourceRoot":""}]);
+// Exports
+/* harmony default export */ __webpack_exports__["default"] = (___CSS_LOADER_EXPORT___);
+
+
+/***/ }),
+
 /***/ "../node_modules/css-loader/dist/cjs.js!../node_modules/sass-loader/dist/cjs.js!./styles/modules/product-card.sass":
 /*!*************************************************************************************************************************!*\
   !*** ../node_modules/css-loader/dist/cjs.js!../node_modules/sass-loader/dist/cjs.js!./styles/modules/product-card.sass ***!
@@ -849,6 +1321,29 @@ __webpack_require__.r(__webpack_exports__);
 var ___CSS_LOADER_EXPORT___ = _node_modules_css_loader_dist_runtime_api_js__WEBPACK_IMPORTED_MODULE_1___default()((_node_modules_css_loader_dist_runtime_sourceMaps_js__WEBPACK_IMPORTED_MODULE_0___default()));
 // Module
 ___CSS_LOADER_EXPORT___.push([module.id, ".card {\n  height: 320px;\n  display: flex;\n  flex-direction: column;\n  position: relative;\n  transition: 0.2s all;\n  cursor: pointer;\n}\n.card:hover {\n  background-color: #3b3a31;\n}\n.card:hover .card__body {\n  background-color: #3b3a31;\n}\n.card:hover .card__top {\n  background-color: #4e4d41;\n}\n.card__top {\n  flex-grow: 1;\n  display: flex;\n  flex-direction: column;\n  align-items: center;\n  justify-content: center;\n  position: relative;\n  background-color: #414036;\n}\n.card__image {\n  max-width: calc(100% - 100px);\n  width: 100%;\n}\n.card__price {\n  position: absolute;\n  right: 0;\n  bottom: 0;\n  display: inline-block;\n  padding: 8px;\n  min-width: 72px;\n  text-align: center;\n  background-color: #c92086;\n  color: #fff;\n  font-family: \"Lato\", sans-serif;\n  font-weight: 700;\n  font-size: 17px;\n  line-height: 1.2;\n}\n.card__body {\n  height: 70px;\n  background-color: #2d2c25;\n  display: flex;\n  flex-direction: row;\n  align-items: center;\n  justify-content: space-between;\n}\n.card__title {\n  text-align: center;\n  font-weight: 500;\n  font-size: 21px;\n  font-style: italic;\n  line-height: 1.2;\n  width: 100%;\n}\n.card__button {\n  background-color: #ecd41a;\n  width: 72px;\n  flex: 1 0 72px;\n  height: 100%;\n  display: flex;\n  flex-direction: column;\n  align-items: center;\n  justify-content: center;\n  cursor: pointer;\n}\n.card__button:hover, .card__button:active {\n  background-color: #c8b416;\n}\n\n@media all and (max-width: 767px) {\n  .card {\n    margin-bottom: 16px;\n    height: auto;\n  }\n}", "",{"version":3,"sources":["webpack://./styles/modules/product-card.sass","webpack://./styles/var.sass"],"names":[],"mappings":"AAEA;EACI,aCQU;EDPV,aAAA;EACA,sBAAA;EACA,kBAAA;EACA,oBAAA;EACA,eAAA;AADJ;AAEI;EACI,yBAAA;AAAR;AACQ;EACI,yBAAA;AACZ;AAAQ;EACI,yBAAA;AAEZ;AADI;EACI,YAAA;EACA,aAAA;EACA,sBAAA;EACA,mBAAA;EACA,uBAAA;EACA,kBAAA;EACA,yBChBa;ADmBrB;AAFI;EACI,6BAAA;EACA,WAAA;AAIR;AAHI;EACI,kBAAA;EACA,QAAA;EACA,SAAA;EACA,qBAAA;EACA,YAAA;EACA,eAAA;EACA,kBAAA;EACA,yBC9BK;ED+BL,WCnCM;EDoCN,+BAAA;EACA,gBAAA;EACA,eAAA;EACA,gBAAA;AAKR;AAJI;EACI,YAAA;EACA,yBCnCW;EDoCX,aAAA;EACA,mBAAA;EACA,mBAAA;EACA,8BAAA;AAMR;AALI;EACI,kBAAA;EACA,gBAAA;EACA,eAAA;EACA,kBAAA;EACA,gBAAA;EACA,WAAA;AAOR;AANI;EACI,yBCrDO;EDsDP,WAAA;EACA,cAAA;EACA,YAAA;EACA,aAAA;EACA,sBAAA;EACA,mBAAA;EACA,uBAAA;EACA,eAAA;AAQR;AAPQ;EACI,yBC9DQ;ADuEpB;;AAPA;EACI;IACI,mBAAA;IACA,YAAA;EAUN;AACF","sourcesContent":["@import \"../var.sass\"\n    \n.card\n    height: $card-height\n    display: flex\n    flex-direction: column\n    position: relative\n    transition: 0.2s all\n    cursor: pointer\n    &:hover\n        background-color: #3b3a31\n        .card__body\n            background-color: #3b3a31\n        .card__top\n            background-color: #4e4d41\n    &__top\n        flex-grow: 1\n        display: flex\n        flex-direction: column\n        align-items: center\n        justify-content: center\n        position: relative\n        background-color: $color-black-middle\n    &__image\n        max-width: calc(100% - 100px)\n        width: 100%\n    &__price\n        position: absolute\n        right: 0\n        bottom: 0\n        display: inline-block\n        padding: 8px\n        min-width: 72px\n        text-align: center\n        background-color: $color-pink\n        color: $color-body\n        font-family: $font-primary, sans-serif\n        font-weight: 700\n        font-size: 17px\n        line-height: 1.2\n    &__body\n        height: 70px\n        background-color: $color-black-dark\n        display: flex\n        flex-direction: row\n        align-items: center\n        justify-content: space-between\n    &__title\n        text-align: center\n        font-weight: 500\n        font-size: 21px\n        font-style: italic\n        line-height: 1.2\n        width: 100%\n    &__button\n        background-color: $color-yellow\n        width: 72px\n        flex: 1 0 72px\n        height: 100%\n        display: flex\n        flex-direction: column\n        align-items: center\n        justify-content: center\n        cursor: pointer\n        &:hover, &:active\n            background-color: $color-yellow-dark\n            \n@media all and (max-width: 767px)\n    .card\n        margin-bottom: 16px\n        height: auto\n","$color-white: #fff\n$color-black: #1f1e19\n$color-yellow: #ecd41a\n$color-yellow-dark: #c8b416\n$color-pink: #c92086\n$color-black-light: #6e6a51\n$color-black-middle: #414036\n$color-black-dark: #2d2c25\n$color-grey: #b6b4a2\n$color-body: $color-white\n$carousel-height: 313px\n$card-height: 320px\n$font-primary: \"Lato\"\n$font-secondary: \"Sriracha\""],"sourceRoot":""}]);
+// Exports
+/* harmony default export */ __webpack_exports__["default"] = (___CSS_LOADER_EXPORT___);
+
+
+/***/ }),
+
+/***/ "../node_modules/css-loader/dist/cjs.js!../node_modules/sass-loader/dist/cjs.js!./styles/modules/product-grid.sass":
+/*!*************************************************************************************************************************!*\
+  !*** ../node_modules/css-loader/dist/cjs.js!../node_modules/sass-loader/dist/cjs.js!./styles/modules/product-grid.sass ***!
+  \*************************************************************************************************************************/
+/***/ (function(module, __webpack_exports__, __webpack_require__) {
+
+__webpack_require__.r(__webpack_exports__);
+/* harmony import */ var _node_modules_css_loader_dist_runtime_sourceMaps_js__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! ../../../node_modules/css-loader/dist/runtime/sourceMaps.js */ "../node_modules/css-loader/dist/runtime/sourceMaps.js");
+/* harmony import */ var _node_modules_css_loader_dist_runtime_sourceMaps_js__WEBPACK_IMPORTED_MODULE_0___default = /*#__PURE__*/__webpack_require__.n(_node_modules_css_loader_dist_runtime_sourceMaps_js__WEBPACK_IMPORTED_MODULE_0__);
+/* harmony import */ var _node_modules_css_loader_dist_runtime_api_js__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! ../../../node_modules/css-loader/dist/runtime/api.js */ "../node_modules/css-loader/dist/runtime/api.js");
+/* harmony import */ var _node_modules_css_loader_dist_runtime_api_js__WEBPACK_IMPORTED_MODULE_1___default = /*#__PURE__*/__webpack_require__.n(_node_modules_css_loader_dist_runtime_api_js__WEBPACK_IMPORTED_MODULE_1__);
+// Imports
+
+
+var ___CSS_LOADER_EXPORT___ = _node_modules_css_loader_dist_runtime_api_js__WEBPACK_IMPORTED_MODULE_1___default()((_node_modules_css_loader_dist_runtime_sourceMaps_js__WEBPACK_IMPORTED_MODULE_0___default()));
+// Module
+___CSS_LOADER_EXPORT___.push([module.id, ".products-grid .products-grid__inner {\n  display: grid;\n  grid-gap: 20px;\n  grid-template-columns: repeat(3, calc(33.3333% - 14px));\n}\n\n.products-grid.is-loading .products-grid__inner {\n  display: none;\n}\n\n@media all and (max-width: 767px) {\n  .products-grid .products-grid__inner {\n    display: block;\n    padding: 16px;\n    background-color: var(--color-black-light);\n  }\n}", "",{"version":3,"sources":["webpack://./styles/modules/product-grid.sass"],"names":[],"mappings":"AAEA;EACI,aAAA;EACA,cAAA;EACA,uDAAA;AADJ;;AAIA;EACI,aAAA;AADJ;;AAGA;EACI;IACI,cAAA;IACA,aAAA;IACA,0CAAA;EAAN;AACF","sourcesContent":["@import \"../var.sass\"\n    \n.products-grid .products-grid__inner\n    display: grid\n    grid-gap: 20px\n    grid-template-columns: repeat(3, calc(33.3333% - 14px))\n\n\n.products-grid.is-loading .products-grid__inner\n    display: none\n\n@media all and (max-width: 767px)\n    .products-grid .products-grid__inner\n        display: block\n        padding: 16px\n        background-color: var(--color-black-light)"],"sourceRoot":""}]);
 // Exports
 /* harmony default export */ __webpack_exports__["default"] = (___CSS_LOADER_EXPORT___);
 
@@ -1234,6 +1729,57 @@ var update = _node_modules_style_loader_dist_runtime_injectStylesIntoStyleTag_js
 
 /***/ }),
 
+/***/ "./styles/modules/cart/cart-icon.sass":
+/*!********************************************!*\
+  !*** ./styles/modules/cart/cart-icon.sass ***!
+  \********************************************/
+/***/ (function(__unused_webpack_module, __webpack_exports__, __webpack_require__) {
+
+__webpack_require__.r(__webpack_exports__);
+/* harmony import */ var _node_modules_style_loader_dist_runtime_injectStylesIntoStyleTag_js__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! !../../../../node_modules/style-loader/dist/runtime/injectStylesIntoStyleTag.js */ "../node_modules/style-loader/dist/runtime/injectStylesIntoStyleTag.js");
+/* harmony import */ var _node_modules_style_loader_dist_runtime_injectStylesIntoStyleTag_js__WEBPACK_IMPORTED_MODULE_0___default = /*#__PURE__*/__webpack_require__.n(_node_modules_style_loader_dist_runtime_injectStylesIntoStyleTag_js__WEBPACK_IMPORTED_MODULE_0__);
+/* harmony import */ var _node_modules_style_loader_dist_runtime_styleDomAPI_js__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! !../../../../node_modules/style-loader/dist/runtime/styleDomAPI.js */ "../node_modules/style-loader/dist/runtime/styleDomAPI.js");
+/* harmony import */ var _node_modules_style_loader_dist_runtime_styleDomAPI_js__WEBPACK_IMPORTED_MODULE_1___default = /*#__PURE__*/__webpack_require__.n(_node_modules_style_loader_dist_runtime_styleDomAPI_js__WEBPACK_IMPORTED_MODULE_1__);
+/* harmony import */ var _node_modules_style_loader_dist_runtime_insertBySelector_js__WEBPACK_IMPORTED_MODULE_2__ = __webpack_require__(/*! !../../../../node_modules/style-loader/dist/runtime/insertBySelector.js */ "../node_modules/style-loader/dist/runtime/insertBySelector.js");
+/* harmony import */ var _node_modules_style_loader_dist_runtime_insertBySelector_js__WEBPACK_IMPORTED_MODULE_2___default = /*#__PURE__*/__webpack_require__.n(_node_modules_style_loader_dist_runtime_insertBySelector_js__WEBPACK_IMPORTED_MODULE_2__);
+/* harmony import */ var _node_modules_style_loader_dist_runtime_setAttributesWithoutAttributes_js__WEBPACK_IMPORTED_MODULE_3__ = __webpack_require__(/*! !../../../../node_modules/style-loader/dist/runtime/setAttributesWithoutAttributes.js */ "../node_modules/style-loader/dist/runtime/setAttributesWithoutAttributes.js");
+/* harmony import */ var _node_modules_style_loader_dist_runtime_setAttributesWithoutAttributes_js__WEBPACK_IMPORTED_MODULE_3___default = /*#__PURE__*/__webpack_require__.n(_node_modules_style_loader_dist_runtime_setAttributesWithoutAttributes_js__WEBPACK_IMPORTED_MODULE_3__);
+/* harmony import */ var _node_modules_style_loader_dist_runtime_insertStyleElement_js__WEBPACK_IMPORTED_MODULE_4__ = __webpack_require__(/*! !../../../../node_modules/style-loader/dist/runtime/insertStyleElement.js */ "../node_modules/style-loader/dist/runtime/insertStyleElement.js");
+/* harmony import */ var _node_modules_style_loader_dist_runtime_insertStyleElement_js__WEBPACK_IMPORTED_MODULE_4___default = /*#__PURE__*/__webpack_require__.n(_node_modules_style_loader_dist_runtime_insertStyleElement_js__WEBPACK_IMPORTED_MODULE_4__);
+/* harmony import */ var _node_modules_style_loader_dist_runtime_styleTagTransform_js__WEBPACK_IMPORTED_MODULE_5__ = __webpack_require__(/*! !../../../../node_modules/style-loader/dist/runtime/styleTagTransform.js */ "../node_modules/style-loader/dist/runtime/styleTagTransform.js");
+/* harmony import */ var _node_modules_style_loader_dist_runtime_styleTagTransform_js__WEBPACK_IMPORTED_MODULE_5___default = /*#__PURE__*/__webpack_require__.n(_node_modules_style_loader_dist_runtime_styleTagTransform_js__WEBPACK_IMPORTED_MODULE_5__);
+/* harmony import */ var _node_modules_css_loader_dist_cjs_js_node_modules_sass_loader_dist_cjs_js_cart_icon_sass__WEBPACK_IMPORTED_MODULE_6__ = __webpack_require__(/*! !!../../../../node_modules/css-loader/dist/cjs.js!../../../../node_modules/sass-loader/dist/cjs.js!./cart-icon.sass */ "../node_modules/css-loader/dist/cjs.js!../node_modules/sass-loader/dist/cjs.js!./styles/modules/cart/cart-icon.sass");
+
+      
+      
+      
+      
+      
+      
+      
+      
+      
+
+var options = {};
+
+options.styleTagTransform = (_node_modules_style_loader_dist_runtime_styleTagTransform_js__WEBPACK_IMPORTED_MODULE_5___default());
+options.setAttributes = (_node_modules_style_loader_dist_runtime_setAttributesWithoutAttributes_js__WEBPACK_IMPORTED_MODULE_3___default());
+
+      options.insert = _node_modules_style_loader_dist_runtime_insertBySelector_js__WEBPACK_IMPORTED_MODULE_2___default().bind(null, "head");
+    
+options.domAPI = (_node_modules_style_loader_dist_runtime_styleDomAPI_js__WEBPACK_IMPORTED_MODULE_1___default());
+options.insertStyleElement = (_node_modules_style_loader_dist_runtime_insertStyleElement_js__WEBPACK_IMPORTED_MODULE_4___default());
+
+var update = _node_modules_style_loader_dist_runtime_injectStylesIntoStyleTag_js__WEBPACK_IMPORTED_MODULE_0___default()(_node_modules_css_loader_dist_cjs_js_node_modules_sass_loader_dist_cjs_js_cart_icon_sass__WEBPACK_IMPORTED_MODULE_6__["default"], options);
+
+
+
+
+       /* harmony default export */ __webpack_exports__["default"] = (_node_modules_css_loader_dist_cjs_js_node_modules_sass_loader_dist_cjs_js_cart_icon_sass__WEBPACK_IMPORTED_MODULE_6__["default"] && _node_modules_css_loader_dist_cjs_js_node_modules_sass_loader_dist_cjs_js_cart_icon_sass__WEBPACK_IMPORTED_MODULE_6__["default"].locals ? _node_modules_css_loader_dist_cjs_js_node_modules_sass_loader_dist_cjs_js_cart_icon_sass__WEBPACK_IMPORTED_MODULE_6__["default"].locals : undefined);
+
+
+/***/ }),
+
 /***/ "./styles/modules/filters.sass":
 /*!*************************************!*\
   !*** ./styles/modules/filters.sass ***!
@@ -1285,6 +1831,57 @@ var update = _node_modules_style_loader_dist_runtime_injectStylesIntoStyleTag_js
 
 /***/ }),
 
+/***/ "./styles/modules/modal.sass":
+/*!***********************************!*\
+  !*** ./styles/modules/modal.sass ***!
+  \***********************************/
+/***/ (function(__unused_webpack_module, __webpack_exports__, __webpack_require__) {
+
+__webpack_require__.r(__webpack_exports__);
+/* harmony import */ var _node_modules_style_loader_dist_runtime_injectStylesIntoStyleTag_js__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! !../../../node_modules/style-loader/dist/runtime/injectStylesIntoStyleTag.js */ "../node_modules/style-loader/dist/runtime/injectStylesIntoStyleTag.js");
+/* harmony import */ var _node_modules_style_loader_dist_runtime_injectStylesIntoStyleTag_js__WEBPACK_IMPORTED_MODULE_0___default = /*#__PURE__*/__webpack_require__.n(_node_modules_style_loader_dist_runtime_injectStylesIntoStyleTag_js__WEBPACK_IMPORTED_MODULE_0__);
+/* harmony import */ var _node_modules_style_loader_dist_runtime_styleDomAPI_js__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! !../../../node_modules/style-loader/dist/runtime/styleDomAPI.js */ "../node_modules/style-loader/dist/runtime/styleDomAPI.js");
+/* harmony import */ var _node_modules_style_loader_dist_runtime_styleDomAPI_js__WEBPACK_IMPORTED_MODULE_1___default = /*#__PURE__*/__webpack_require__.n(_node_modules_style_loader_dist_runtime_styleDomAPI_js__WEBPACK_IMPORTED_MODULE_1__);
+/* harmony import */ var _node_modules_style_loader_dist_runtime_insertBySelector_js__WEBPACK_IMPORTED_MODULE_2__ = __webpack_require__(/*! !../../../node_modules/style-loader/dist/runtime/insertBySelector.js */ "../node_modules/style-loader/dist/runtime/insertBySelector.js");
+/* harmony import */ var _node_modules_style_loader_dist_runtime_insertBySelector_js__WEBPACK_IMPORTED_MODULE_2___default = /*#__PURE__*/__webpack_require__.n(_node_modules_style_loader_dist_runtime_insertBySelector_js__WEBPACK_IMPORTED_MODULE_2__);
+/* harmony import */ var _node_modules_style_loader_dist_runtime_setAttributesWithoutAttributes_js__WEBPACK_IMPORTED_MODULE_3__ = __webpack_require__(/*! !../../../node_modules/style-loader/dist/runtime/setAttributesWithoutAttributes.js */ "../node_modules/style-loader/dist/runtime/setAttributesWithoutAttributes.js");
+/* harmony import */ var _node_modules_style_loader_dist_runtime_setAttributesWithoutAttributes_js__WEBPACK_IMPORTED_MODULE_3___default = /*#__PURE__*/__webpack_require__.n(_node_modules_style_loader_dist_runtime_setAttributesWithoutAttributes_js__WEBPACK_IMPORTED_MODULE_3__);
+/* harmony import */ var _node_modules_style_loader_dist_runtime_insertStyleElement_js__WEBPACK_IMPORTED_MODULE_4__ = __webpack_require__(/*! !../../../node_modules/style-loader/dist/runtime/insertStyleElement.js */ "../node_modules/style-loader/dist/runtime/insertStyleElement.js");
+/* harmony import */ var _node_modules_style_loader_dist_runtime_insertStyleElement_js__WEBPACK_IMPORTED_MODULE_4___default = /*#__PURE__*/__webpack_require__.n(_node_modules_style_loader_dist_runtime_insertStyleElement_js__WEBPACK_IMPORTED_MODULE_4__);
+/* harmony import */ var _node_modules_style_loader_dist_runtime_styleTagTransform_js__WEBPACK_IMPORTED_MODULE_5__ = __webpack_require__(/*! !../../../node_modules/style-loader/dist/runtime/styleTagTransform.js */ "../node_modules/style-loader/dist/runtime/styleTagTransform.js");
+/* harmony import */ var _node_modules_style_loader_dist_runtime_styleTagTransform_js__WEBPACK_IMPORTED_MODULE_5___default = /*#__PURE__*/__webpack_require__.n(_node_modules_style_loader_dist_runtime_styleTagTransform_js__WEBPACK_IMPORTED_MODULE_5__);
+/* harmony import */ var _node_modules_css_loader_dist_cjs_js_node_modules_sass_loader_dist_cjs_js_modal_sass__WEBPACK_IMPORTED_MODULE_6__ = __webpack_require__(/*! !!../../../node_modules/css-loader/dist/cjs.js!../../../node_modules/sass-loader/dist/cjs.js!./modal.sass */ "../node_modules/css-loader/dist/cjs.js!../node_modules/sass-loader/dist/cjs.js!./styles/modules/modal.sass");
+
+      
+      
+      
+      
+      
+      
+      
+      
+      
+
+var options = {};
+
+options.styleTagTransform = (_node_modules_style_loader_dist_runtime_styleTagTransform_js__WEBPACK_IMPORTED_MODULE_5___default());
+options.setAttributes = (_node_modules_style_loader_dist_runtime_setAttributesWithoutAttributes_js__WEBPACK_IMPORTED_MODULE_3___default());
+
+      options.insert = _node_modules_style_loader_dist_runtime_insertBySelector_js__WEBPACK_IMPORTED_MODULE_2___default().bind(null, "head");
+    
+options.domAPI = (_node_modules_style_loader_dist_runtime_styleDomAPI_js__WEBPACK_IMPORTED_MODULE_1___default());
+options.insertStyleElement = (_node_modules_style_loader_dist_runtime_insertStyleElement_js__WEBPACK_IMPORTED_MODULE_4___default());
+
+var update = _node_modules_style_loader_dist_runtime_injectStylesIntoStyleTag_js__WEBPACK_IMPORTED_MODULE_0___default()(_node_modules_css_loader_dist_cjs_js_node_modules_sass_loader_dist_cjs_js_modal_sass__WEBPACK_IMPORTED_MODULE_6__["default"], options);
+
+
+
+
+       /* harmony default export */ __webpack_exports__["default"] = (_node_modules_css_loader_dist_cjs_js_node_modules_sass_loader_dist_cjs_js_modal_sass__WEBPACK_IMPORTED_MODULE_6__["default"] && _node_modules_css_loader_dist_cjs_js_node_modules_sass_loader_dist_cjs_js_modal_sass__WEBPACK_IMPORTED_MODULE_6__["default"].locals ? _node_modules_css_loader_dist_cjs_js_node_modules_sass_loader_dist_cjs_js_modal_sass__WEBPACK_IMPORTED_MODULE_6__["default"].locals : undefined);
+
+
+/***/ }),
+
 /***/ "./styles/modules/product-card.sass":
 /*!******************************************!*\
   !*** ./styles/modules/product-card.sass ***!
@@ -1332,6 +1929,57 @@ var update = _node_modules_style_loader_dist_runtime_injectStylesIntoStyleTag_js
 
 
        /* harmony default export */ __webpack_exports__["default"] = (_node_modules_css_loader_dist_cjs_js_node_modules_sass_loader_dist_cjs_js_product_card_sass__WEBPACK_IMPORTED_MODULE_6__["default"] && _node_modules_css_loader_dist_cjs_js_node_modules_sass_loader_dist_cjs_js_product_card_sass__WEBPACK_IMPORTED_MODULE_6__["default"].locals ? _node_modules_css_loader_dist_cjs_js_node_modules_sass_loader_dist_cjs_js_product_card_sass__WEBPACK_IMPORTED_MODULE_6__["default"].locals : undefined);
+
+
+/***/ }),
+
+/***/ "./styles/modules/product-grid.sass":
+/*!******************************************!*\
+  !*** ./styles/modules/product-grid.sass ***!
+  \******************************************/
+/***/ (function(__unused_webpack_module, __webpack_exports__, __webpack_require__) {
+
+__webpack_require__.r(__webpack_exports__);
+/* harmony import */ var _node_modules_style_loader_dist_runtime_injectStylesIntoStyleTag_js__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! !../../../node_modules/style-loader/dist/runtime/injectStylesIntoStyleTag.js */ "../node_modules/style-loader/dist/runtime/injectStylesIntoStyleTag.js");
+/* harmony import */ var _node_modules_style_loader_dist_runtime_injectStylesIntoStyleTag_js__WEBPACK_IMPORTED_MODULE_0___default = /*#__PURE__*/__webpack_require__.n(_node_modules_style_loader_dist_runtime_injectStylesIntoStyleTag_js__WEBPACK_IMPORTED_MODULE_0__);
+/* harmony import */ var _node_modules_style_loader_dist_runtime_styleDomAPI_js__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! !../../../node_modules/style-loader/dist/runtime/styleDomAPI.js */ "../node_modules/style-loader/dist/runtime/styleDomAPI.js");
+/* harmony import */ var _node_modules_style_loader_dist_runtime_styleDomAPI_js__WEBPACK_IMPORTED_MODULE_1___default = /*#__PURE__*/__webpack_require__.n(_node_modules_style_loader_dist_runtime_styleDomAPI_js__WEBPACK_IMPORTED_MODULE_1__);
+/* harmony import */ var _node_modules_style_loader_dist_runtime_insertBySelector_js__WEBPACK_IMPORTED_MODULE_2__ = __webpack_require__(/*! !../../../node_modules/style-loader/dist/runtime/insertBySelector.js */ "../node_modules/style-loader/dist/runtime/insertBySelector.js");
+/* harmony import */ var _node_modules_style_loader_dist_runtime_insertBySelector_js__WEBPACK_IMPORTED_MODULE_2___default = /*#__PURE__*/__webpack_require__.n(_node_modules_style_loader_dist_runtime_insertBySelector_js__WEBPACK_IMPORTED_MODULE_2__);
+/* harmony import */ var _node_modules_style_loader_dist_runtime_setAttributesWithoutAttributes_js__WEBPACK_IMPORTED_MODULE_3__ = __webpack_require__(/*! !../../../node_modules/style-loader/dist/runtime/setAttributesWithoutAttributes.js */ "../node_modules/style-loader/dist/runtime/setAttributesWithoutAttributes.js");
+/* harmony import */ var _node_modules_style_loader_dist_runtime_setAttributesWithoutAttributes_js__WEBPACK_IMPORTED_MODULE_3___default = /*#__PURE__*/__webpack_require__.n(_node_modules_style_loader_dist_runtime_setAttributesWithoutAttributes_js__WEBPACK_IMPORTED_MODULE_3__);
+/* harmony import */ var _node_modules_style_loader_dist_runtime_insertStyleElement_js__WEBPACK_IMPORTED_MODULE_4__ = __webpack_require__(/*! !../../../node_modules/style-loader/dist/runtime/insertStyleElement.js */ "../node_modules/style-loader/dist/runtime/insertStyleElement.js");
+/* harmony import */ var _node_modules_style_loader_dist_runtime_insertStyleElement_js__WEBPACK_IMPORTED_MODULE_4___default = /*#__PURE__*/__webpack_require__.n(_node_modules_style_loader_dist_runtime_insertStyleElement_js__WEBPACK_IMPORTED_MODULE_4__);
+/* harmony import */ var _node_modules_style_loader_dist_runtime_styleTagTransform_js__WEBPACK_IMPORTED_MODULE_5__ = __webpack_require__(/*! !../../../node_modules/style-loader/dist/runtime/styleTagTransform.js */ "../node_modules/style-loader/dist/runtime/styleTagTransform.js");
+/* harmony import */ var _node_modules_style_loader_dist_runtime_styleTagTransform_js__WEBPACK_IMPORTED_MODULE_5___default = /*#__PURE__*/__webpack_require__.n(_node_modules_style_loader_dist_runtime_styleTagTransform_js__WEBPACK_IMPORTED_MODULE_5__);
+/* harmony import */ var _node_modules_css_loader_dist_cjs_js_node_modules_sass_loader_dist_cjs_js_product_grid_sass__WEBPACK_IMPORTED_MODULE_6__ = __webpack_require__(/*! !!../../../node_modules/css-loader/dist/cjs.js!../../../node_modules/sass-loader/dist/cjs.js!./product-grid.sass */ "../node_modules/css-loader/dist/cjs.js!../node_modules/sass-loader/dist/cjs.js!./styles/modules/product-grid.sass");
+
+      
+      
+      
+      
+      
+      
+      
+      
+      
+
+var options = {};
+
+options.styleTagTransform = (_node_modules_style_loader_dist_runtime_styleTagTransform_js__WEBPACK_IMPORTED_MODULE_5___default());
+options.setAttributes = (_node_modules_style_loader_dist_runtime_setAttributesWithoutAttributes_js__WEBPACK_IMPORTED_MODULE_3___default());
+
+      options.insert = _node_modules_style_loader_dist_runtime_insertBySelector_js__WEBPACK_IMPORTED_MODULE_2___default().bind(null, "head");
+    
+options.domAPI = (_node_modules_style_loader_dist_runtime_styleDomAPI_js__WEBPACK_IMPORTED_MODULE_1___default());
+options.insertStyleElement = (_node_modules_style_loader_dist_runtime_insertStyleElement_js__WEBPACK_IMPORTED_MODULE_4___default());
+
+var update = _node_modules_style_loader_dist_runtime_injectStylesIntoStyleTag_js__WEBPACK_IMPORTED_MODULE_0___default()(_node_modules_css_loader_dist_cjs_js_node_modules_sass_loader_dist_cjs_js_product_grid_sass__WEBPACK_IMPORTED_MODULE_6__["default"], options);
+
+
+
+
+       /* harmony default export */ __webpack_exports__["default"] = (_node_modules_css_loader_dist_cjs_js_node_modules_sass_loader_dist_cjs_js_product_grid_sass__WEBPACK_IMPORTED_MODULE_6__["default"] && _node_modules_css_loader_dist_cjs_js_node_modules_sass_loader_dist_cjs_js_product_grid_sass__WEBPACK_IMPORTED_MODULE_6__["default"].locals ? _node_modules_css_loader_dist_cjs_js_node_modules_sass_loader_dist_cjs_js_product_grid_sass__WEBPACK_IMPORTED_MODULE_6__["default"].locals : undefined);
 
 
 /***/ }),
@@ -1744,6 +2392,16 @@ module.exports = styleTagTransform;
 
 /***/ }),
 
+/***/ "./assets/images/icons/cart-icon.svg":
+/*!*******************************************!*\
+  !*** ./assets/images/icons/cart-icon.svg ***!
+  \*******************************************/
+/***/ (function(module, __unused_webpack_exports, __webpack_require__) {
+
+module.exports = __webpack_require__.p + "e80a94569b21bf847047.svg";
+
+/***/ }),
+
 /***/ "./assets/images/icons/check-icon.svg":
 /*!********************************************!*\
   !*** ./assets/images/icons/check-icon.svg ***!
@@ -1955,9 +2613,13 @@ __webpack_require__.r(__webpack_exports__);
 /* harmony import */ var _assets_data_categories_json__WEBPACK_IMPORTED_MODULE_7__ = __webpack_require__(/*! ./assets/data/categories.json */ "./assets/data/categories.json");
 /* harmony import */ var _modules_slider__WEBPACK_IMPORTED_MODULE_8__ = __webpack_require__(/*! ./modules/slider */ "./modules/slider.ts");
 /* harmony import */ var _modules_product_grid__WEBPACK_IMPORTED_MODULE_9__ = __webpack_require__(/*! ./modules/product-grid */ "./modules/product-grid.ts");
+/* harmony import */ var _modules_cart_icon__WEBPACK_IMPORTED_MODULE_10__ = __webpack_require__(/*! ./modules/cart-icon */ "./modules/cart-icon.ts");
+/* harmony import */ var _modules_cart__WEBPACK_IMPORTED_MODULE_11__ = __webpack_require__(/*! ./modules/cart */ "./modules/cart.ts");
 function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
 function _defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } }
 function _createClass(Constructor, protoProps, staticProps) { if (protoProps) _defineProperties(Constructor.prototype, protoProps); if (staticProps) _defineProperties(Constructor, staticProps); Object.defineProperty(Constructor, "prototype", { writable: false }); return Constructor; }
+
+
 
 
 
@@ -1978,6 +2640,8 @@ var Main = /*#__PURE__*/function () {
       value: 3
     });
     this.productsGrid = new _modules_product_grid__WEBPACK_IMPORTED_MODULE_9__["default"](_assets_data_products_json__WEBPACK_IMPORTED_MODULE_6__);
+    this.cartIcon = new _modules_cart_icon__WEBPACK_IMPORTED_MODULE_10__["default"]();
+    this.cart = new _modules_cart__WEBPACK_IMPORTED_MODULE_11__["default"](this.cartIcon);
     this.render();
   }
   _createClass(Main, [{
@@ -1993,38 +2657,61 @@ var Main = /*#__PURE__*/function () {
       var stepSlider = this.stepSlider.getElem();
       var stepSliderContainer = document.querySelector("[data-slider-holder]");
       stepSliderContainer.append(stepSlider);
+      var cartIcon = this.cartIcon.getElem();
+      var cartIconContainer = document.querySelector("[data-cart-icon-holder]");
+      cartIconContainer.append(cartIcon);
       var productsGrid = this.productsGrid.getElem();
       var productsGridContainer = document.querySelector("[data-products-grid-holder]");
       productsGridContainer.innerHTML = "";
       productsGridContainer.append(productsGrid);
+      document.body.addEventListener("product-add", function (event) {
+        if (event instanceof CustomEvent) {
+          var product = _assets_data_products_json__WEBPACK_IMPORTED_MODULE_6__.filter(function (prod) {
+            return prod.id === event.detail;
+          });
+          _this.cart.addProduct(product[0]);
+        }
+      });
+
+      // Первоначальная установка фильтрации:
+      var noNutsFilterElem = document.getElementById('nuts-checkbox');
+      var vegeterianOnlyFilterElem = document.getElementById('nuts-checkbox');
+      this.productsGrid.updateFilter({
+        noNuts: noNutsFilterElem.checked,
+        vegeterianOnly: vegeterianOnlyFilterElem.checked,
+        maxSpiciness: this.stepSlider.getValue(),
+        category: this.ribbonMenu.getValue()
+      });
       document.body.addEventListener("slider-change", function (event) {
         if (event instanceof CustomEvent) {
           _this.productsGrid.updateFilter({
+            // Значение остроты из события 'slider-change'
             maxSpiciness: event.detail
           });
         }
       });
-
-      /* document.body.addEventListener("ribbon-select", event => {
-      this.productsGrid.updateFilter({
-       category: event.detail // значение остроты из события 'slider-change'
+      document.body.addEventListener("ribbon-select", function (event) {
+        if (event instanceof CustomEvent) {
+          _this.productsGrid.updateFilter({
+            // Тип блюда из события 'ribbon-select'
+            category: event.detail
+          });
+        }
       });
-      }); */
-
-      /* document.body.addEventListener("change", event => {
-      console.dir(event.target.id);
-      if (event.target.id === "nuts-checkbox") {
-       this.productsGrid.updateFilter({
-      noNuts: event.target.checked
-       });
-      } else if (event.target.id === "vegeterian-checkbox") {
-       this.productsGrid.updateFilter({
-      vegeterianOnly: event.target.checked // новое значение чекбокса
-       });
-      } else {
-       console.log("Что-то сильно пошло не так...");
-      }
-      }); */
+      document.body.addEventListener("change", function (event) {
+        if (event.target) {
+          var eventTarget = event.target;
+          if (eventTarget.id === "nuts-checkbox") {
+            _this.productsGrid.updateFilter({
+              noNuts: eventTarget.checked
+            });
+          } else if (eventTarget.id === "vegeterian-checkbox") {
+            _this.productsGrid.updateFilter({
+              vegeterianOnly: eventTarget.checked
+            });
+          }
+        }
+      });
     }
   }]);
   return Main;
@@ -2033,4 +2720,4 @@ new Main(_assets_data_slides_json__WEBPACK_IMPORTED_MODULE_4__, _assets_data_cat
 }();
 /******/ })()
 ;
-//# sourceMappingURL=main.5e89500b3a9d98b4468a.js.map
+//# sourceMappingURL=main.9856a132b32893bd00e8.js.map

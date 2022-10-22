@@ -1,0 +1,53 @@
+@import "../../var.sass"        
+    
+.cart-form
+    padding: 20px 27px 32px
+    background-color: $color-black-dark
+    &__title
+        font-size: 21px
+        line-height: 1.2
+        font-weight: 700
+        font-family: $font-primary, sans-serif
+        font-style: italic
+        color: $color-body
+        margin: 0 0 25px
+        text-align: center
+    &__group+.cart-form__group
+        margin-top: 16px
+        &_row
+            display: grid
+            grid-template-columns: repeat(3, 1fr)
+            grid-gap: 6px
+    &__input
+        height: 48px
+        border: none
+        box-shadow: none
+        outline: none
+        background-color: $color-white
+        padding: 11px 16px
+        color: $color-black
+        font-family: $font-primary, sans-serif
+        font-style: italic
+        font-size: 21px
+        line-height: 1.2
+        font-weight: 500
+        width: 100%
+        transition: 0.2s box-shadow
+        &:focus
+            box-shadow: 0 5px 0 0 $color-pink
+        &::placeholder
+            color: $color-grey
+            
+@media all and (max-width: 767px)
+    .cart-form
+        background-color: transparent
+        padding: 24px
+
+    .cart-form__group.cart-form__group_row
+        display: block
+
+    .cart-form__group.cart-form__group_row>.cart-form__input
+        margin-top: 16px
+
+    .cart-form__group.cart-form__group_row>.cart-form__input:first-child
+        margin-top: 0

@@ -1,9 +1,9 @@
-/* import createElement from "../assets/lib/create-element";
+import createElement from "../assets/lib/create-element";
 import "../styles/modules/modal.sass";
 // <================================================== ОПИСАНИЕ ТИПОВ =================================================> \\
 
 // Структура модального окна:
-interface IModal {
+export interface IModal {
     render: () => void,                         // Рендер модального окна
     getElem: () => HTMLElement,                 // Получение модального окна
     open: () => void,                           // Открытие модального окна
@@ -111,4 +111,4 @@ export default class Modal implements IModal {
             modalBody.append(node);
         }
     }
-} */
+}

@@ -54,8 +54,8 @@ export default class ProductCard implements IProductCard {
 
         // Получение кнопки добавления продукта в корзину:
         const addBtn = this.elem.querySelector(".card__button") as HTMLElement;
-        // Прослушмивание событие "Клика" по кнопке добавления. В случае нажатия вызываем метод добавления:
-        addBtn.addEventListener("click", () => this.onAddClick.call(this), {once: true});
+        // Прослушивание событие "Клика" по кнопке добавления. В случае нажатия вызываем метод добавления:
+        addBtn.addEventListener("click", () => this.onAddClick.call(this));
     }
 
     // <======================================== ПОЛУЧЕНИЕ КАРТОЧКИ ПРОДУКТА ==========================================> \\

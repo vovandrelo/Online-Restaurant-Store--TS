@@ -11,19 +11,24 @@ import categories from "./assets/data/categories.json";
 import { ICategories } from "./modules/ribbon-menu";
 import StepSlider from "./modules/slider";
 import ProductGrid from "./modules/product-grid";
-
+import CartIcon from "./modules/cart-icon";
+import Cart from "./modules/cart";
 
 class Main {
 	private carousel;
 	private ribbonMenu;
 	private stepSlider;
 	private productsGrid;
+	private cartIcon;
+	private cart;
 
 	constructor(slides: ISlide[], categories: ICategories[]) {
         this.carousel = new Carousel(slides);
 		this.ribbonMenu = new RibbonMenu(categories);
 		this.stepSlider = new StepSlider({ steps: 5, value: 3 });
 		this.productsGrid = new ProductGrid(products);
+		this.cartIcon = new CartIcon();
+		this.cart = new Cart(this.cartIcon);
         this.render();
     }
 
@@ -40,10 +45,22 @@ class Main {
 		const stepSliderContainer = document.querySelector("[data-slider-holder]") as HTMLElement;
     	stepSliderContainer.append(stepSlider);
 
+		const cartIcon = this.cartIcon.getElem();
+		const cartIconContainer = document.querySelector("[data-cart-icon-holder]") as HTMLElement;
+		cartIconContainer.append(cartIcon);
+
 		const productsGrid = this.productsGrid.getElem();
 		const productsGridContainer = document.querySelector("[data-products-grid-holder]") as HTMLElement;
 		productsGridContainer.innerHTML = "";
     	productsGridContainer.append(productsGrid);
+
+
+		document.body.addEventListener("product-add", event => {
+			if (event instanceof CustomEvent<string>) {
+				const product = products.filter(prod => prod.id === event.detail);
+				this.cart.addProduct(product[0]);
+			}
+		});
 
 		// Первоначальная установка фильтрации:
 		const noNutsFilterElem = document.getElementById('nuts-checkbox') as HTMLInputElement;

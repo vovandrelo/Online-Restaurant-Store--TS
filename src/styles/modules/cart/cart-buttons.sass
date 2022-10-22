@@ -1,0 +1,40 @@
+@import "../../var.sass"
+
+.cart-buttons
+    padding: 48px 80px 0
+    text-align: center
+    &__button
+        padding-right: 54px !important
+        &::after
+            content: ""
+            position: absolute
+            right: 24px
+            top: 50%
+            transform: translate(0, -50%)
+            background: url("/assets/images/icons/angle-sm-icon.svg") center no-repeat
+            background-size: cover
+            width: 10px
+            height: 18px
+        &.is-loading
+            &::after
+                position: absolute
+                top: 22px
+                right: 16px
+    &__info
+        padding: 11px 14px 13px
+        display: flex
+        flex-direction: column
+        align-items: center
+        justify-content: center
+        color: $color-body
+        font-family: $font-primary, sans-serif
+        background-color: $color-pink
+        &-text
+            font-weight: 500
+            font-size: 11px
+            text-transform: uppercase
+        &-price
+            font-size: 20px
+            line-height: 1.2
+            font-weight: 500
+  
