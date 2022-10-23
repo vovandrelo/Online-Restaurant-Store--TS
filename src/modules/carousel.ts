@@ -74,7 +74,7 @@ export default class Carousel implements ICarousel {
         // Получаем "Движимый" элемент:
         this.carouselInner = this.elem.querySelector(".carousel__inner") as HTMLElement;
 
-        // Получаем ораганы управления:
+        // Получаем органы управления:
         this.arrowLeft = this.elem.querySelector(".carousel__arrow_left") as HTMLElement;
         this.arrowRight = this.elem.querySelector(".carousel__arrow_right") as HTMLElement;
 

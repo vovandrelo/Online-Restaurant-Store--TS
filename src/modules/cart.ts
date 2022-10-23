@@ -1,7 +1,7 @@
-import { ICartIcon } from "./cart-icon";
 import createElement from "../assets/lib/create-element";
 import escapeHtml from "../assets/lib/escape-html";
 import Modal from "./modal";
+import { ICartIcon } from "./cart-icon";
 import { IModal } from "./modal";
 
 import "../styles/modules/cart/cart-buttons.sass";
@@ -10,6 +10,8 @@ import "../styles/modules/cart/cart-form.sass";
 import "../styles/modules/cart/cart-product.sass";
 import "../styles/modules/cart/mobile.sass";
 
+// <================================================== ОПИСАНИЕ ТИПОВ =================================================> \\
+// Структура элемента корзины:
 interface ICartItem {
     product: {
         name: string,
@@ -21,23 +23,34 @@ interface ICartItem {
     count: number,
 }
 
+// Структура модуля корзины:
 export interface ICart {
-    onProductUpdate: (cartItem: ICartItem) => void,
-    addProduct: (product: ICartItem["product"]) => void,
-    updateProductCount: (productId: string, amount: number) => void,
-    isEmpty: () => boolean,
-    getTotalCount: () => number,
-    getTotalPrice: () => number,
+    renderProduct: (product: ICartItem["product"], count: number) => HTMLElement,   // Рендер продукта в корзине
+    renderOrderForm: () => HTMLElement,                                             // Рендер формы в корзине
+    addEventListeners: () => void,                                                  // Обработка клика по иконке
+    onProductUpdate: (cartItem: ICartItem) => void,                                 // Обновление информации в корзине
+    addProduct: (product: ICartItem["product"]) => void,                            // Обработка добавления продукта
+    updateProductCount: (productId: string, amount: number) => void,                // Обновление количества продукта
+    isEmpty: () => boolean,                                                         // Проверка на пустоту корзины
+    getTotalCount: () => number,                                                    // Получение общего количества продуктов
+    getTotalPrice: () => number,                                                    // Получение общей цены продуктов
+    renderModal: () => void,                                                        // Открытие корзины
+    onSubmit: (event: Event) => void,                                               // Отправка заказа
 }
 
-export default class Cart implements ICart {
-    private cartItems: ICartItem[] = [];
-    private cartIcon: ICartIcon;
-    private modal: IModal = new Modal();
+// <================================================= РЕАЛИЗАЦИЯ МОДУЛЯ ===============================================> \\
 
+// Модуль - корзина:
+export default class Cart implements ICart {
+    // <============================================ ОБЪЯВЛЕНИЕ ПЕРЕМЕННЫХ ============================================> \\
+    private cartItems: ICartItem[] = [];    // Элементы в корзине
+    private cartIcon: ICartIcon;            // Объект иконки корзины
+    private modal: IModal = new Modal();    // Объект модального окна
+
+    // <=========================================== РЕАЛИЗАЦИЯ КОНСТРУКТОРА ===========================================> \\
     constructor(cartIcon: ICartIcon) {        
-        this.cartIcon = cartIcon;
-        this.addEventListeners();
+        this.cartIcon = cartIcon;           // Получение иконки корзины
+        this.addEventListeners();           // Обработка клика по иконке корзины
     }
 
     // <========================================= РЕНДЕР ЭЛЕМЕНТА В КОРЗИНЕ ===========================================> \\
@@ -96,29 +109,38 @@ export default class Cart implements ICart {
 
     // <========================================= ОБРАБОТКА КЛИКА ПО КОРЗИНЕ ==========================================> \\
     addEventListeners() {
-        const cartItem = this.cartIcon.getElem();
-        cartItem.addEventListener("click", () => this.renderModal())
+        const cartItem = this.cartIcon.getElem();                       // Получение элемента коризны
+        cartItem.addEventListener("click", () => this.renderModal())    // Клик по корзине вызывает открытие модальног окна
     }
-  
-    // <========================================= ОБНОВЛЕНИЕ ИКОНКИ КОРЗИНЫ ===========================================> \\
+
+    // <================================ ОТОБРАЖЕНИЕ ИНФОРМАЦИИ О ПРОДУКТЕ В КОРЗИНЕ ==================================> \\
     onProductUpdate(cartItem: ICartItem) {
-        this.cartIcon.update(this);        
+        // Обновление иконки корзины:
+        this.cartIcon.update(this);
         
+        // Если модальное окно открыто и существует элемент модального окна, то:
         if (document.body.classList.contains("is-modal-open") && this.modal.getElem()) {
+            // Получение id обновляемого продукта:
             let productId = cartItem.product.id;
+            // Получение количества обновляемого продукта
             let productCount = this.modal.getElem().querySelector(`[data-product-id="${productId}"] .cart-counter__count`) as HTMLElement;
+            // Получение цены обновляемого продукта:
             let productPrice = this.modal.getElem().querySelector(`[data-product-id="${productId}"] .cart-product__price`) as HTMLElement;
-            let infoPrice = this.modal.getElem().querySelector(`.cart-buttons__info-price`) as HTMLElement;
+            // Получение общей цены:
+            let totalPrice = this.modal.getElem().querySelector(`.cart-buttons__info-price`) as HTMLElement;
       
+            // Если в корзине нет элементов, то закрываем модальное окно:
             if (this.cartItems.length === 0) {
                 this.modal.close();
+            // Если количество обновляемого продукта в корзине равно 0, то удаляем его:
             } else if (cartItem.count === 0) {
                 const modal = this.modal.getElem().querySelector(`[data-product-id=${cartItem.product.id}]`) as HTMLElement;
                 modal.remove();
+            // Если количество обновляемого продукта в корзине не равен 0, то изменяем его количество:
             } else {
                 productCount.innerHTML = String(cartItem.count);
                 productPrice.innerHTML = `€${(cartItem.product.price * cartItem.count).toFixed(2)}`;
-                infoPrice.innerHTML = `€${this.getTotalPrice().toFixed(2)}`;
+                totalPrice.innerHTML = `€${this.getTotalPrice().toFixed(2)}`;
             }
         }
     }
@@ -162,29 +184,46 @@ export default class Cart implements ICart {
         // Обновляем интерфейс корзины на основании новых значений:
         this.onProductUpdate(targetProduct);
     }
-
+    // <======================================== ПРОВЕРКА КОРЗИНЫ НА ПУСТОТУ ==========================================> \\
     isEmpty = (): boolean => this.cartItems.length === 0 ? true : false;
+
+    // <==================================== ПОДСЧЁТ ОБЩЕГО КОЛИЧЕСТВА ПРОДУКТОВ ======================================> \\
     getTotalCount = (): number => this.cartItems.reduce((sum, item) => sum + item.count, 0);
+
+    // <========================================= ПОДСЧЁТ ОБЩЕЙ СТОИМОСТИ =============================================> \\
     getTotalPrice = (): number => this.cartItems.reduce((sum, item) => sum + item.count * item.product.price, 0);
 
-    renderModal() {                
+    // <================================== ОТОБРАЖЕНИЕ МОДАЛЬНОГО ОКНА(КОРЗИНЫ) =======================================> \\
+    renderModal() {
+        // Рендер модального окна:
         this.modal.render();
+
+        // Установка заголовка:
         this.modal.setTitle("Your order");
 
+        // Формирование тела модального окна (отображение продуктов):
         const cartBody = document.createElement("div");
         this.cartItems.forEach(item => cartBody.append(this.renderProduct(item.product, item.count)));
+        // Формирование тела модального окна (отображение формы):
         cartBody.append(this.renderOrderForm());
 
-        const btnAdd = cartBody.querySelectorAll(".cart-counter__button_plus");
-        const btnDel = cartBody.querySelectorAll(".cart-counter__button_minus");
-        const form = cartBody.querySelector(".cart-form") as HTMLElement;
+        // Получение необходимых элементов модального окна:
+        const btnAdd = cartBody.querySelectorAll(".cart-counter__button_plus");     // Кнопки увеличения кол-ва
+        const btnDel = cartBody.querySelectorAll(".cart-counter__button_minus");    // КНопки уменьшения кол-ва
+        const form = cartBody.querySelector(".cart-form") as HTMLElement;           // Форма
 
+        // Обработчик события увеличения/уменьшения количества продуктов в корзине:
         const clickHandler = (event: Event) => {
             if (event && event.currentTarget) {
+                // Получение кнопки, по которой произошёл клик:
                 const eventTarget = event.currentTarget as HTMLElement;
+                // Получение элемента, которому принадлежит кнопка:
                 const productTarget = eventTarget.closest("[data-product-id]") as HTMLElement;
+                // Получение id элемента, которому принадлежит кнопка:
                 const productIdTarget = productTarget.dataset.productId as string;
-                const action = eventTarget.classList.contains('cart-counter__button_plus') ? 1 : -1;                
+                // Определение типа кнопки (+ или -):
+                const action = eventTarget.classList.contains('cart-counter__button_plus') ? 1 : -1;      
+                // Обновление отображения нового количества:          
                 this.updateProductCount(productIdTarget, action);
             }
         }
@@ -192,27 +231,37 @@ export default class Cart implements ICart {
         btnDel.forEach(btn => btn.addEventListener("click", clickHandler));
         form.addEventListener("submit", (event: Event) => this.onSubmit(event));
 
+        // Установка тела модального окна:
         this.modal.setBody(cartBody);
+
+        // Открытие модального окна:
         this.modal.open();
     }
 
+
+    // <======================================= ОБРАБОТКА ОТПРАВКИ ЗАКАЗА =============================================> \\
     onSubmit(event: Event) {
         event.preventDefault();
         
         if (event && event.currentTarget) {
+            // Получение формы:
             const eventTarget = event.currentTarget as HTMLFormElement;
+            // Получение кнопки "Отправить":
             const btnSubmit = eventTarget.querySelector('[type="submit"]') as HTMLElement;
-            btnSubmit.classList.add("is-loading")
+            btnSubmit.classList.add("is-loading");
 
+            // Отправка запроса на добавление заказа:
             fetch('https://httpbin.org/post', {
                 method: "POST",
                 body: new FormData(eventTarget)
             })
+            // Обработка ответа:
             .then(() => {                
-                this.cartItems = [];
-                this.cartIcon.update(this);
-                this.modal.setTitle('Success!');
+                this.cartItems = [];                // Отчищение заказа
+                this.cartIcon.update(this);         // Обновление иконки корзины
+                this.modal.setTitle('Success!');    // Добавление статуса успешной отправки заказа
 
+                // Добавление в тело модального окна статуса успешного зхаказа:
                 const cartBody = createElement(`
                     <div class="modal__body-inner">
                         <p>Order successful! Your order is being cooked :)
@@ -221,7 +270,6 @@ export default class Cart implements ICart {
                         </p>
                     </div>
                 `);
-
                 this.modal.setBody(cartBody);
             })
             .catch(error => console.log("Error:", error));

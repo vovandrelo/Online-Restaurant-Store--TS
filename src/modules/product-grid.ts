@@ -59,20 +59,20 @@ export default class ProductGrid implements IProductGrids {
         // Создание отображаемых блюд:
         let displayedProds = this.products;
 
-        // Фильтрация блюд на основе noNuts
+        // Фильтрация блюд на основе noNuts:
         if (this.filters.noNuts) {
             displayedProds = displayedProds.filter(prod => !prod.nuts);
         }
-        // Фильтрация блюд на основе vegeterianOnly
+        // Фильтрация блюд на основе vegeterianOnly:
         if (this.filters.vegeterianOnly) {
             displayedProds = displayedProds.filter(prod => prod.vegeterian);
         }
-        // Фильтрация блюд на основе maxSpiciness
+        // Фильтрация блюд на основе maxSpiciness:
         if (this.filters.hasOwnProperty("maxSpiciness")) {
             const maxSpiciness = this.filters.maxSpiciness as number;
             displayedProds = displayedProds.filter(prod => prod.spiciness <= maxSpiciness);
         }
-        // Фильтрация блюд на основе category
+        // Фильтрация блюд на основе category:
         if (this.filters.category) {            
             displayedProds = displayedProds.filter(prod => prod.category === this.filters.category);
         }

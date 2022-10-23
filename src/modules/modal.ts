@@ -106,7 +106,7 @@ export default class Modal implements IModal {
         if (this.elem) {
             // Получаем тело модального окна:
             const modalBody = this.elem.querySelector(".modal__body") as HTMLElement;
-            // Устанавливаем новое тело:
+            // Устанавливаем новое тело модального окна:
             modalBody.innerHTML = "";
             modalBody.append(node);
         }

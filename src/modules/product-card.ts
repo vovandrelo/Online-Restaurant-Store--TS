@@ -72,7 +72,7 @@ export default class ProductCard implements IProductCard {
                 detail: this.product.id,
                 bubbles: true
             });
-            // Запускаем собственное событие
+            // Запускаем собственное событие:
             this.elem.dispatchEvent(event);
         }
     }

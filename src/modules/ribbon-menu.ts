@@ -128,7 +128,7 @@ export default class RibbonMenu implements IRibbonMenu {
             // Формируем пользовательское событие, которое указывает, что была применена фильтрацция:
             const customEvent = new CustomEvent('ribbon-select', {
                 detail: eventTarget.dataset.id,
-                bubbles: true
+                bubbles: true,
             });
 
             // Запускаем пользовательское событие:

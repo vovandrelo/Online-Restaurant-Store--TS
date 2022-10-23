@@ -165,7 +165,6 @@ export default class StepSlider implements IStepSlider {
 	createCustomEvent() {
 		if (this.elem) {					
 			const eventSliderChange = new CustomEvent('slider-change', {
-				
 				detail: this.value,
 				bubbles: true
 			});
